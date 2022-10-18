@@ -65,6 +65,7 @@
                 <div class="container">
                     <div class="post_inner">
                         <div class="descr_inner">
+                            
                             <strong><?= ++$line['id'].". ". $line['title'] ?></strong>
                             <div>
                                 <?= $line['descr'] ?>
