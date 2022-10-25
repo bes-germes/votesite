@@ -1,5 +1,5 @@
 <?php
-    $db = pg_connect("host=localhost port=5433 user=postgres dbname=olegDB password=postgres")
+    $db = pg_connect("host=localhost port=5432 user=postgres dbname=olegDB password=postgres")
     or die('Не удалось подключиться к БД: ' . pg_last_error());
 
     if (isset($_POST['title_req']) && isset($_POST['text_req'])){
