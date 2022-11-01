@@ -16,10 +16,9 @@ function DBAddComment(idx) {
             idCom: id
         },
         success: function (data) {
-            console.log(data.idCom);
             var today = new Date();
             var now = today.toLocaleString();
-            var curCom = data.com;
+            console.log(now);
             $('#commnet_container' + idx).append(" <div class='comment_body' id='comment_body'><div class='comment_head'>Auther</div><div class='comment_inner'>" + comment + "</div><div class='comment_time'>" + now + "</div></div>");
 
         },

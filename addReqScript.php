@@ -6,8 +6,11 @@
 
        $title = $_POST['title_req'];
        $descr = $_POST['text_req'];
-       $count = pg_fetch_row(pg_query($db, "SELECT count(*) FROM posts"));
-       $res = pg_query($db, "INSERT into posts VALUES(".$count[0].", '$title', '$descr', 0)");
+       session_start();
+       $user = $_SESSION['userId'];
+       $postTime = date('d.m.Y H:i:s');
+       $count = pg_fetch_row(pg_query($db, "SELECT count(*) FROM inc_idea"));
+       $res = pg_query($db, "INSERT into inc_idea VALUES(".$count[0].", '$title', '$descr', '$user', 0, '$postTime', '$postTime', '$postTime', '$postTime', '$postTime', '$postTime', ' ', 0, 0, 0, 0)");
     }
 
     // if ($res){

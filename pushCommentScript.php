@@ -7,6 +7,6 @@ if (isset($_POST['idCom']) && isset($_POST['com'])) {
         $descr = $_POST['com'];
         $postId = $_POST['idCom'];
         $postTime = date('d.m.Y H:i:s');
-        $res = pg_query($db, "INSERT into postscomment VALUES('$postId', '$descr', '$postTime')");
+        $res = pg_query($db, "INSERT into inc_comment VALUES('$postId', '$descr', '$postTime')");
 
 }
