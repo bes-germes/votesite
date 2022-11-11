@@ -1,16 +1,23 @@
 <?php
-    $db = pg_connect("host=localhost port=5433 user=postgres dbname=olegDB password=postgres")
-        or die('Не удалось подключиться к БД: ' . pg_last_error());
+$db = pg_connect("host=localhost port=5433 user=postgres dbname=olegDB password=postgres")
+   or die('Не удалось подключиться к БД: ' . pg_last_error());
+$count = pg_fetch_row(pg_query($db, "SELECT count(*) FROM inc_idea_vote"));
 
-    $quary = "UPDATE isuserlikepost SET islike = " . $_POST['likeBool'] . ", isdislike = " . $_POST['dislikeBool'] . " WHERE postid = " . $_POST['postId'] . ";";
+session_start();
+
+$quary = "SELECT * FROM inc_idea_vote WHERE idea_id =". $_POST['postId'];
+echo $quary;
+
+$result = pg_query($db, (string) $quary);
+$line = pg_fetch_assoc($result);
+
+if (!is_array($line)){
+   $quary = "INSERT INTO inc_idea_vote VALUES(" . $_POST['postId'] . "," . $_SESSION['userId'] . "," . $_POST['dislikeBool'] . "," . $count[0] . ")";
     echo $quary;
+    pg_query($db, (string) $quary);
+}else{
+   $quary = "UPDATE inc_idea_vote SET value = " . $_POST['dislikeBool'] . " WHERE idea_id = " . $_POST['postId'] . ";";
+   echo $quary;
+   pg_query($db, (string) $quary);
 
-    if (isset($_POST['postId']) && isset($_POST['likeBool']) && isset($_POST['dislikeBool'])) {
-        pg_query($db, (string) $quary);
-    }
-
-// if ($res) {
-//     while ($line = pg_fetch_array($res, null, PGSQL_ASSOC)) {
-//        echo $line;
-//     }
-//  }
+}

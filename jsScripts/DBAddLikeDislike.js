@@ -8,48 +8,42 @@ function DBAddDislike(idx) {
     //     isLike = !isLike;
     // }
 
-    if(document.getElementById('like_btn' + idx).value == 1)
-        var isLike = "true";
-    else
-        var isLike = "false";
+    var isLike = document.getElementById('like_btn' + idx).value
+    var isDislike = document.getElementById('dis_btn' + idx).value
 
-    if(document.getElementById('dis_btn' + idx).value == 1)
-        var isDislike = "true";
-    else
-        var isDislike = "false";
+    if (isLike == 1)
+        isLike = 0;
 
-    if(isLike === "true")
-        isLike = "false";
+    if (isDislike == 0)
+        isDislike = -1;
+    else {
+        isDislike = 0;
+    }
 
-    if(isDislike === 'false')
-        isDislike = "true";
-    else
-        isDislike = "false";
-        
     $.ajax({
         type: "POST",
         url: 'pushDislikeScript.php',
         data: {
             postId: idx,
-            likeBool: isLike, 
+            likeBool: isLike,
             dislikeBool: isDislike
         },
         success: function (data) {
             console.log(data);
 
-            if(document.getElementById('dis_btn' + idx).classList == 'btn btn-outline-dark'){
-                document.getElementById('dis_btn' + idx).classList.add('btn-dark');
-                document.getElementById('dis_btn' + idx).classList.remove('btn-outline-dark');
-                if(document.getElementById('like_btn' + idx).classList == 'btn btn-danger'){
-                    document.getElementById('like_btn' + idx).classList.remove('btn-danger');
-                    document.getElementById('like_btn' + idx).classList.add('btn-outline-danger');
+            if (document.getElementById('dis_btn' + idx).classList == 'btn btn-outline-danger') {
+                document.getElementById('dis_btn' + idx).classList.add('btn-danger');
+                document.getElementById('dis_btn' + idx).classList.remove('btn-outline-danger');
+                if (document.getElementById('like_btn' + idx).classList == 'btn btn-success') {
+                    document.getElementById('like_btn' + idx).classList.remove('btn-success');
+                    document.getElementById('like_btn' + idx).classList.add('btn-outline-success');
                 }
                 document.getElementById('like_btn' + idx).value = 0;
-                document.getElementById('dis_btn' + idx).value = 1;
+                document.getElementById('dis_btn' + idx).value = -1;
             }
-            else{
-                document.getElementById('dis_btn' + idx).classList.add('btn-outline-dark');
-                document.getElementById('dis_btn' + idx).classList.remove('btn-dark');
+            else {
+                document.getElementById('dis_btn' + idx).classList.add('btn-outline-danger');
+                document.getElementById('dis_btn' + idx).classList.remove('btn-danger');
 
                 document.getElementById('like_btn' + idx).value = 0;
                 document.getElementById('dis_btn' + idx).value = 0;
@@ -61,50 +55,44 @@ function DBAddDislike(idx) {
 }
 function DBAddLike(idx) {
 
-    
-    if(document.getElementById('like_btn' + idx).value == 1)
-        var isLike = "true";
-    else
-        var isLike = "false";
 
-    if(document.getElementById('dis_btn' + idx).value == 1)
-        var isDislike = "true";
-    else
-        var isDislike = "false";
+    var isLike = document.getElementById('like_btn' + idx).value
+    var isDislike = document.getElementById('dis_btn' + idx).value
 
-    if(isDislike === "true")
-        isDislike = "false";
+    if (isDislike == -1)
+        isDislike = 0;
 
-    if(isLike === 'false')
-        isLike = "true";
-    else
-        isLike = "false";
+    if (isLike == 0)
+        isLike = 1;
+    else {
+        isLike = 0;
+    }
 
     $.ajax({
         type: "POST",
         url: 'pushLikeScript.php',
         data: {
             postId: idx,
-            likeBool: isLike, 
+            likeBool: isLike,
             dislikeBool: isDislike
         },
         success: function (data) {
             console.log(data);
-            
-            if(document.getElementById('like_btn' + idx).classList == 'btn btn-outline-danger'){
-                document.getElementById('like_btn' + idx).classList.add('btn-danger');
-                document.getElementById('like_btn' + idx).classList.remove('btn-outline-danger');
-                document.getElementById('dis_btn' + idx).classList.add('btn-outline-dark');
-                document.getElementById('dis_btn' + idx).classList.remove('btn-dark');
+
+            if (document.getElementById('like_btn' + idx).classList == 'btn btn-outline-success') {
+                document.getElementById('like_btn' + idx).classList.add('btn-success');
+                document.getElementById('like_btn' + idx).classList.remove('btn-outline-success');
+                document.getElementById('dis_btn' + idx).classList.add('btn-outline-danger');
+                document.getElementById('dis_btn' + idx).classList.remove('btn-danger');
                 document.getElementById('like_btn' + idx).value = 1;
                 document.getElementById('dis_btn' + idx).value = 0;
             }
-            else{
-                document.getElementById('like_btn' + idx).classList.add('btn-outline-danger');
-                document.getElementById('like_btn' + idx).classList.remove('btn-danger');
-                if(document.getElementById('dis_btn' + idx).classList == 'btn btn-danger'){
-                    document.getElementById('dis_btn' + idx).classList.remove('btn-dark');
-                    document.getElementById('dis_btn' + idx).classList.add('btn-outline-dark');
+            else {
+                document.getElementById('like_btn' + idx).classList.add('btn-outline-success');
+                document.getElementById('like_btn' + idx).classList.remove('btn-success');
+                if (document.getElementById('dis_btn' + idx).classList == 'btn btn-success') {
+                    document.getElementById('dis_btn' + idx).classList.remove('btn-danger');
+                    document.getElementById('dis_btn' + idx).classList.add('btn-outline-danger');
                     document.getElementById('like_btn' + idx).value = false;
                 }
                 document.getElementById('like_btn' + idx).value = 0;

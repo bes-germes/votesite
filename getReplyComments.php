@@ -3,7 +3,7 @@ $db = pg_connect("host=localhost port=5433 user=postgres dbname=olegDB password=
     or die('Не удалось подключиться к БД: ' . pg_last_error());
 
 if (isset($_POST['commentId']) && isset($_POST['postId'])) {
-    $queryRepComments = 'SELECT * FROM inc_comment WHERE idea_id=' . $_POST['postId'] . 'AND comment_id!=' . $_POST['commentId'] . ';';
+    $queryRepComments = 'SELECT * FROM inc_comment WHERE idea_id=' . $_POST['postId'] . 'AND comment_id =' . $_POST['commentId'] . ';';
     $resultRepComments = pg_query($queryRepComments) or die('Ошибка запроса: ' . pg_last_error());
 
     echo "<div class='reply_body' id='reply_body" . $_POST['commentId'] . "'>";
@@ -13,7 +13,7 @@ if (isset($_POST['commentId']) && isset($_POST['postId'])) {
             <div class='comment_head'>Auther</div>
             <div class='comment_inner'><?=$comment['description']?></div>
             <div class='comment_time'> <?= date('d.m.Y H:i:s', strtotime($comment['created']))?>
-                <button type='button' id="<?='answer_btn' . $comment['id']?>" class='btn' style="max-width: 100px; color: black; background-color: white; font-size: 13px;" onclick="DBAnwerToComment(<?=$comment['id']?>)">
+                <button type='button' id="<?='answer_btn' . $comment['id']?>" class='btn' style="max-width: 100px; color: black; background-color: white; font-size: 13px;" onclick="DBAnwerToComment(<?=$comment['id']?>, <?=$comment['idea_id']?>)">
                     Ответить
                 </button>
 

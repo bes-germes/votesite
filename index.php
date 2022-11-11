@@ -28,6 +28,9 @@
 
 </head>
 <header class="header">
+
+
+
     <div class="container">
         <div class="header_inner">
             <div class="header_logo">Название сайта</div>
@@ -82,26 +85,33 @@
             <?php
             while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
 
-                $query_likes = 'SELECT * FROM isuserlikepost WHERE userid=' . $_SESSION['userId'] . ' and postid=' . $line['id'];
+                $query_likes = 'SELECT * FROM inc_idea_vote WHERE inc_idea_vote.user_id=' . $_SESSION['userId'] . ' and inc_idea_vote.idea_id=' . $line['id'];
                 $result_likes = pg_query($query_likes) or die('Ошибка запроса: ' . pg_last_error());
                 $likes_line = pg_fetch_array($result_likes, null, PGSQL_ASSOC);
-                if ($likes_line['islike'] == 't' || $likes_line['isdislike'] == 't') {
-                    if ($likes_line['islike'] == 't') {
-                        $put_like = '';
-                        $put_dislike = 'outline-';
-                        $likeBool = 1;
-                        $disBool = 0;
-                    } else {
-                        $put_like = 'outline-';
-                        $put_dislike = '';
-                        $likeBool = 0;
-                        $disBool = 1;
-                    }
-                } else {
+
+                if ($likes_line == false) {
                     $put_like = 'outline-';
                     $put_dislike = 'outline-';
                     $likeBool = 0;
                     $disBool = 0;
+                } else {
+
+                    if ($likes_line['value'] == 1) {
+                        $put_like = '';
+                        $put_dislike = 'outline-';
+                        $likeBool = 1;
+                        $disBool = 0;
+                    } else if ($likes_line['value'] == -1) {
+                        $put_like = 'outline-';
+                        $put_dislike = '';
+                        $likeBool = 0;
+                        $disBool = 1;
+                    } else if ($likes_line['value'] == 0) {
+                        $put_like = 'outline-';
+                        $put_dislike = 'outline-';
+                        $likeBool = 0;
+                        $disBool = 0;
+                    }
                 }
             ?>
 
@@ -122,11 +132,11 @@
                                     Обзор
                                 </button>
                                 <div>
-                                    <button class="btn btn-<?= $put_like ?>danger" id="like_btn<?= $line['id'] ?>" value="<?= $likeBool ?>" style="border-radius: 15px;" onclick="DBAddLike(<?= $line['id'] ?>)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-suit-heart-fill" viewBox="0 0 16 16">
-                                            <path d="M4 1c2.21 0 4 1.755 4 3.92C8 2.755 9.79 1 12 1s4 1.755 4 3.92c0 3.263-3.234 4.414-7.608 9.608a.513.513 0 0 1-.784 0C3.234 9.334 0 8.183 0 4.92 0 2.755 1.79 1 4 1z" />
+                                    <button class="btn btn-<?= $put_like ?>success" id="like_btn<?= $line['id'] ?>" value="<?= $likeBool ?>" style="border-radius: 15px;" onclick="DBAddLike(<?= $line['id'] ?>)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                                            <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z" />
                                         </svg></button>
-                                    <button class="btn btn-<?= $put_dislike ?>dark" id="dis_btn<?= $line['id'] ?>" value=" <?= $disBool ?>" style="border-radius: 15px;" onclick="DBAddDislike(<?= $line['id'] ?>)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heartbreak-fill" viewBox="0 0 16 16">
-                                            <path fill-rule="evenodd" d="M8.931.586 7 3l1.5 4-2 3L8 15C22.534 5.396 13.757-2.21 8.931.586ZM7.358.77 5.5 3 7 7l-1.5 3 1.815 4.537C-6.533 4.96 2.685-2.467 7.358.77Z" />
+                                    <button class="btn btn-<?= $put_dislike ?>danger" id="dis_btn<?= $line['id'] ?>" value=" <?= $disBool ?>" style="border-radius: 15px;" onclick="DBAddDislike(<?= $line['id'] ?>)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z" />
                                         </svg></button>
                                 </div>
                             </div>
@@ -167,8 +177,9 @@
                                                 date('d.m.Y H:i:s', strtotime($comment['created']));
                                                 ?>
                                             </div>
-                                            <div class="comment_reply<?= $comment['id'] ?>">
-                                                <button type="button" id="rpy_btn<?= $comment['id'] ?>" class="btn" style="max-width: 100px; color: black; background-color: white; font-size: 13px;" onclick="DBShowReply(<?= $comment['id'] ?>, <?= $curId ?>)">Развернуть</button>
+                                            <button type="button" id="rpy_btn<?= $comment['id'] ?>" value="<?= $comment['id'] ?>" class="btn" style="max-width: 100px; color: black; background-color: white; font-size: 13px;" onclick="DBShowReply(<?= $comment['id'] ?>, <?= $comment['idea_id'] ?>)">Развернуть</button>
+                                            <div class="comment_reply<?= $comment['id'] ?>" id="comment_reply<?= $comment['id'] ?>">
+
                                             </div>
                                         </div>
 
@@ -180,15 +191,15 @@
                                 <div class="comment_push mb-3">
                                     <div class="container-lg">
 
-                                        <div class="input-group">
+                                        <div class="input-group" id="input-group<?= $line['id'] ?>">
 
                                             <?php $curId = $line['id'];
                                             ?>
-                                            <input type="hidden" name="id" id="commentId" value="<?= $curId ?>">
+                                            <textarea name="hide" style="display:none;" class="form-control" style="border-color: grey;" id="answerInput" type="text" placeholder="Ответить на комментарий" required></textarea>
 
-                                            <textarea class="form-control" style="border-color: grey;" id="commentInput<?= $curId ?>" type="text" placeholder="Оставить комментраий" name="comment_push_enter" required></textarea>
+                                            <textarea class="form-control" style="border-color: grey;" id="commentInput" type="text" placeholder="Оставить комментраий" name="comment_push_enter" required></textarea>
 
-                                            <div class="input-group-append">
+                                            <div class="input-group-append" id="commentInputDiv">
                                                 <button type="button" class="btn" style="" type="" onclick="DBAddComment(<?= $curId ?>)">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
                                                         <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zM4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z" />
@@ -196,8 +207,8 @@
                                                 </button>
 
                                             </div>
-                                            <div class="w-100"></div>
-                                            <div id="commentErr" class="d-none" style="color: red;">
+                                            <div class="w-100" id="w-100<?= $line['id'] ?>"></div>
+                                            <div id="commentErr<?= $line['id'] ?>" class="d-none" style="color: red;">
                                                 Пожалуйста введите текст
                                             </div>
                                         </div>
