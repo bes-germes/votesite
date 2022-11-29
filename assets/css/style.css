@@ -152,6 +152,12 @@ h4 {
     position: relative;
 } */
 
+/* .card-img-top {
+    width: 100%;
+    height: 15vw;
+    object-fit: cover;
+} */
+
 .click_link:hover {
     /* background-color: #000000;  */
     color: black;
@@ -304,3 +310,9 @@ h4 {
    resize: none;
    margin-left: ;
 } */
+
+.hiddendiv {
+    display: none;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }

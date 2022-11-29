@@ -5,7 +5,7 @@ $count = pg_fetch_row(pg_query($db, "SELECT count(*) FROM inc_idea_vote"));
 
 session_start();
 
-$quary = "SELECT * FROM inc_idea_vote WHERE idea_id =". $_POST['postId'];
+$quary = "SELECT * FROM inc_idea_vote WHERE idea_id =". $_POST['postId'] . " and user_id =".$_SESSION['userId']. ";";
 echo $quary;
 
 $result = pg_query($db, (string) $quary);
@@ -16,7 +16,7 @@ if (!is_array($line)){
     echo $quary;
     pg_query($db, (string) $quary);
 }else{
-   $quary = "UPDATE inc_idea_vote SET value = " . $_POST['dislikeBool'] . " WHERE idea_id = " . $_POST['postId'] . ";";
+   $quary = "UPDATE inc_idea_vote SET value = " . $_POST['likeBool'] . " WHERE idea_id = " . $_POST['postId'] . " and user_id =".$_SESSION['userId']. ";";
    echo $quary;
    pg_query($db, (string) $quary);
 

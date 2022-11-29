@@ -19,79 +19,63 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <title>Test</title>
 
+    <?php
+    session_start();
+    if (!isset($_SESSION['count'])) {
+        $_SESSION['userId'] = 123;
+    }
+    ?>
 
 </head>
 
 <body>
-    <header>
-        <?php
-        session_start();
+    <header class="header">
 
-        ?>
-        <div class="navbar navbar-dark bg-primary shadow-sm">
-            <div class="container">
-                <a href="index.php" class="navbar-brand d-flex align-items-center">
-                    <!-- <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true" class="me-2" viewBox="0 0 24 24">
-                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                        <circle cx="12" cy="13" r="4"></circle>
-                    </svg> -->
-                    <strong>Инкубатор идей</strong>
-                </a>
 
-                <?php if ($_SESSION['login'] != '') { ?>
-                    <form id="checkInOut" action="loginScript.php" enctype="multipart/form-data" method="POST">
 
-                        <input type="hidden" value="logout" name="action">
-                        <div class="col-12 col-sm-12 col-md-12 col-lg-auto col-xl-auto mb-sm-2 mb-md-2 mb-lg-0">
-                            <a class="btn btn-primary rounded-pill w-100" href="profil.php"><?= $_SESSION['login'] ?></a>
 
-                        </div>
-
-                        <input type="submit" class="btn btn-primary rounded-pill w-100" value="Выйти">
-                    </form>
-                <?php } else { ?>
-                    <form id="checkInOut" action="login.php" enctype="multipart/form-data" method="POST">
-
-                        <input type="hidden" value="login" name="action">
-                        <input type="submit" class="btn btn-primary rounded-pill w-100" value="Войти">
-                    </form>
-                <?php } ?>
+        <div class="container">
+            <div class="header_inner">
+                <div class="header_logo">Название сайта</div>
+                <nav class="nav">
+                    <a class="nav_link" href="#">Информация</a>
+                    <a class="nav_link" href="#">Сервис</a>
+                    <a class="nav_link" href="#">Контакты</a>
+                </nav>
             </div>
         </div>
     </header>
-    <main>
 
+
+    <!-- <div class="intro">
+        <div class="container">
+            <div class="container_inner">
+                <h1 class="intro_title">Здесь вы можете оставить вашу идею</h1>
+            </div>
+        </div>
+    </div> -->
+
+    <main>
         <section class="py-5 text-center container">
             <div class="row py-lg-5">
                 <div class="col-lg-6 col-md-8 mx-auto">
-                    <h1 class="fw-light">Здесь вы можете оставить свою идею</h1>
+                    <h1 class="fw-light">Здесь вы можете оставить вашу идею </h1>
                 </div>
             </div>
         </section>
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-12 col-sm-12 col-md-12 col-lg-auto col-xl-auto mb-sm-2 mb-md-2 mb-lg-0">
-                    <a class="btn btn-primary rounded-pill w-100" href="?flag=0">Рассмотренные идеи</a>
+        <section>
+            <div class="container">
+                <div class="main_inner">
+                    <div style="text-align: center;">
+                        <a class="click_link" href="?flag=0">Рассмотренные идеи</a>
+                        <a class="click_link" href="?flag=1" id="1">Идеи в процессе</a>
+                        <a class="click_link" href="?flag=2" id="2">Отклонённые идеи</a>
+                        <a class="click_link" href="?flag=3" id="3">Предложенные идеи</a>
+                        <a class="click_link" href="addRequset.php">Добавить заявку</a>
+                    </div>
                 </div>
-                <div class="col-12 col-sm-12 col-md-12 col-lg-auto col-xl-auto mb-sm-2 mb-md-2 mb-lg-0">
-                    <a class="btn btn-primary rounded-pill w-100" href="?flag=1" id="1">Идеи в процессе</a>
-
-                </div>
-                <div class="col-12 col-sm-12 col-md-12 col-lg-auto col-xl-auto mb-sm-2 mb-md-2 mb-lg-0">
-                    <a class="btn btn-primary rounded-pill w-100" href="?flag=2" id="2">Отклонённые идеи</a>
-
-                </div>
-                <div class="col-12 col-sm-12 col-md-12 col-lg-auto col-xl-auto mb-sm-2 mb-md-2 mb-lg-0">
-                    <a class="btn btn-primary rounded-pill w-100" href="?flag=3" id="3">Предложенные идеи</a>
-
-                </div>
-                <div class="col-12 col-sm-12 col-md-12 col-lg-auto col-xl-auto mb-sm-2 mb-md-2 mb-lg-0">
-                    <a class="btn btn-primary rounded-pill w-100" href="addRequset.php">Добавить идею</a>
-
-                </div>
-
             </div>
-        </div>
+        </section>
         <hr>
 
         <?php
@@ -142,46 +126,34 @@
                                 $disBool = 0;
                             }
                         }
-
-                        if ($line['image'] == null) {
-                            $link_image = "assets\images\intro.jpg";
-                        } else {
-                            $link_image = $line['image'];
-                        }
                     ?>
+
+
+
 
                         <div class="col-12 col-sm-12 col-md-12 col-lg-3 col-xl-3 mb-sm-2 mb-md-2 mb-lg-0">
                             <div class="card" style="margin-bottom: 15px;">
-                                <div style="width: 100%;height: 40vh;object-fit: cover;">
-                                    <img class="card-img-top" style="width: 100%;height: 40vh;object-fit: cover;" src="<?= $link_image ?>" alt="Card image cap">
-
-                                </div>
-
-                                <div class="card-body" style="width: 100%; height: 150px; max-height: 300px">
-                                    <h5 class="card-title"><?= mb_strimwidth($line['title'], 0, 24, "...") ?></h5>
-                                    <p class="card-text"><?= mb_strimwidth($line['description'], 0, 120, "...") ?></p>
+                                <img class="card-img-top" src="assets\images\intro.jpg" alt="Card image cap">
+                                <div class="card-body">
+                                    <h5 class="card-title"><?= $line['title'] ?></h5>
+                                    <p class="card-text"><?= $line['description'] ?></p>
                                 </div>
                                 <div class="card-body">
 
-                                    <div class="container">
-                                        <div class="row justify-content-between">
-                                            <div class="col-auto">
-                                                <button type="button" class="btn btn-primary rounded-pill" data-bs-toggle="modal" data-bs-target="<?= '#modal' . $line['id'] ?>">
-                                                    Обзор
-                                                </button>
-                                            </div>
-                                            <div class="col-auto">
-                                                <button class="btn btn-<?= $put_like ?>success" id="like_btn<?= $line['id'] ?>" value="<?= $likeBool ?>" style="border-radius: 15px;" onclick="DBAddLike(<?= $line['id'] ?>)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
-                                                        <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z" />
-                                                    </svg></button>
-                                                <button class="btn btn-<?= $put_dislike ?>danger" id="dis_btn<?= $line['id'] ?>" value=" <?= $disBool ?>" style="border-radius: 15px;" onclick="DBAddDislike(<?= $line['id'] ?>)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                                                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z" />
-                                                    </svg></button>
-                                            </div>
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <button type="button" class="post_btn" data-bs-toggle="modal" data-bs-target="<?= '#modal' . $line['id'] ?>">
+                                            Обзор
+                                        </button>
+                                        <div>
+                                            <button class="btn btn-<?= $put_like ?>success" id="like_btn<?= $line['id'] ?>" value="<?= $likeBool ?>" style="border-radius: 15px;" onclick="DBAddLike(<?= $line['id'] ?>)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                                                    <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z" />
+                                                </svg></button>
+                                            <button class="btn btn-<?= $put_dislike ?>danger" id="dis_btn<?= $line['id'] ?>" value=" <?= $disBool ?>" style="border-radius: 15px;" onclick="DBAddDislike(<?= $line['id'] ?>)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z" />
+                                                </svg></button>
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
                             <!-- Модальное окно-->
                             <div class="modal fade" id="<?= 'modal' .  $line['id'] ?>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -210,7 +182,7 @@
                                                     <div class="comment_head">
                                                         Author name
                                                     </div>
-                                                    <div class="comment_inner text-break">
+                                                    <div class="comment_inner">
                                                         <?= $comment['description'] ?>
                                                     </div>
                                                     <div class="comment_time">
@@ -242,14 +214,14 @@
                                                                 <div class="comment_head">
                                                                     Author name
                                                                 </div>
-                                                                <div class="comment_inner text-wrap">
+                                                                <div class="comment_inner">
                                                                     <?= $comment_reply['description'] ?>
                                                                 </div>
                                                                 <div class="comment_time">
                                                                     <?=
                                                                     date('d.m.Y H:i:s', strtotime($comment_reply['created']));
                                                                     ?>
-                                                                    <button type="button" id="answer_btn<?= $comment['id'] ?>" value="<?= $comment['id'] ?>" class="btn" style="max-width: 100px; color: black; background-color: white; font-size: 13px;" onclick="DBAnwerComment(<?= $comment['id'] ?>, <?= $comment['idea_id'] ?>)">Ответить</button>
+                                                                    <button type="button" id="answer_btn<?= $comment['id'] ?>" value="<?= $comment['id'] ?>" class="btn" style="max-width: 100px; color: black; background-color: white; font-size: 13px;" onclick="DBAnwerToComment(<?= $comment['id'] ?>, <?= $comment['idea_id'] ?>)">Ответить</button>
                                                                 </div>
 
                                                         <?php
@@ -267,16 +239,16 @@
                                         <div class="comment_push mb-3">
                                             <div class="container-lg">
 
-                                                <div class="input-group" id="input-group<?= $curId ?>">
+                                                <div class="input-group" id="input-group">
 
                                                     <?php $curId = $line['id'];
                                                     ?>
-                                                    <textarea name="hide" style="display:none;" class="form-control" style="border: none;" id="answerInputArea<?= $curId ?>" type="text" placeholder="Ответить на комментарий" required></textarea>
+                                                    <textarea name="hide" style="display:none;" class="form-control" style="border: none;" id="answerInputArea" type="text" placeholder="Ответить на комментарий" required></textarea>
 
-                                                    <textarea class="form-control" style="border: none;" id="commentInputArea<?= $curId ?>" type="text" placeholder="Оставить комментраий" name="comment_push_enter" required></textarea>
+                                                    <textarea class="form-control" style="border: none;" id="commentInputArea" type="text" placeholder="Оставить комментраий" name="comment_push_enter" required></textarea>
 
-                                                    <div class="input-group-append" id="commentInputDiv<?= $curId ?>">
-                                                        <button type="button" id="commentInputBtn<?= $curId ?>" class="btn" style="" type="" onclick="DBAddComment(<?= $curId ?>)">
+                                                    <div class="input-group-append" id="commentInputDiv">
+                                                        <button id="push_btn" type="button" id="commentInputBtn" class="btn" style="" type="" onclick="DBAddComment(<?= $curId ?>)">
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
                                                                 <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zM4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z" />
                                                             </svg>
@@ -286,23 +258,84 @@
 
                                                 </div>
                                                 <div class="w-100" id="w-100"></div>
-                                                <div id="commentErr<?= $curId ?>" class="d-none" style="color: red;">
+                                                <div id="commentErr" class="d-none" style="color: red;">
                                                     Пожалуйста введите текст
                                                 </div>
                                             </div>
                                         </div>
+
+
+
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-
-                    <?php
+                </div>
+            <?php
                     }
-                    ?>
+            ?>
+
+            </div>
+        </div>
+        <?php
+        pg_freeresult($result);
+        pg_close($db);
+        ?>
+    </main>
+    <div class="footer_container">
+        <div class="container">
+            <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+                <div class="col-md-4 d-flex align-items-center">
+                    <a href="/" class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1">
+                        <svg class="bi" width="30" height="24">
+                            <use xlink:href="#bootstrap">
+                                <symbol id="bootstrap" viewBox="0 0 118 94">
+                                    <title>Bootstrap</title>
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M24.509 0c-6.733 0-11.715 5.893-11.492 12.284.214 6.14-.064 14.092-2.066 20.577C8.943 39.365 5.547 43.485 0 44.014v5.972c5.547.529 8.943 4.649 10.951 11.153 2.002 6.485 2.28 14.437 2.066 20.577C12.794 88.106 17.776 94 24.51 94H93.5c6.733 0 11.714-5.893 11.491-12.284-.214-6.14.064-14.092 2.066-20.577 2.009-6.504 5.396-10.624 10.943-11.153v-5.972c-5.547-.529-8.934-4.649-10.943-11.153-2.002-6.484-2.28-14.437-2.066-20.577C105.214 5.894 100.233 0 93.5 0H24.508zM80 57.863C80 66.663 73.436 72 62.543 72H44a2 2 0 01-2-2V24a2 2 0 012-2h18.437c9.083 0 15.044 4.92 15.044 12.474 0 5.302-4.01 10.049-9.119 10.88v.277C75.317 46.394 80 51.21 80 57.863zM60.521 28.34H49.948v14.934h8.905c6.884 0 10.68-2.772 10.68-7.727 0-4.643-3.264-7.207-9.012-7.207zM49.948 49.2v16.458H60.91c7.167 0 10.964-2.876 10.964-8.281 0-5.406-3.903-8.178-11.425-8.178H49.948z"></path>
+                                </symbol>
+                            </use>
+                        </svg>
+                    </a>
+                    <span class="mb-3 mb-md-0 text-muted">© 2022 Company, Inc</span>
                 </div>
 
-    </main>
+                <ul class="nav col-md-4 justify-content-end list-unstyled d-flex">
+                    <li class="ms-3">
+                        <a class="text-muted" href="#">
+                            <svg class="bi" width="24" height="24">
+                                <use xlink:href="#twitter">
+
+                                    <symbol id="twitter" viewBox="0 0 16 16">
+                                        <path d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z"></path>
+                                    </symbol>
+
+                                </use>
+                            </svg>
+                        </a>
+                    </li>
+                    <li class="ms-3"><a class="text-muted" href="#"><svg class="bi" width="24" height="24">
+                                <use xlink:href="#instagram">
+                                    <symbol id="instagram" viewBox="0 0 16 16">
+                                        <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z"></path>
+                                    </symbol>
+                                </use>
+                            </svg>
+                        </a>
+                    </li>
+                    <li class="ms-3"><a class="text-muted" href="#"><svg class="bi" width="24" height="24">
+                                <use xlink:href="#facebook">
+                                    <symbol id="facebook" viewBox="0 0 16 16">
+                                        <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"></path>
+                                    </symbol>
+                                </use>
+                            </svg>
+                        </a>
+                    </li>
+                </ul>
+            </footer>
+        </div>
+    </div>
 </body>
+
 
 </html>
