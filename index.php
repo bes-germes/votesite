@@ -26,7 +26,10 @@
     <header>
         <?php
         session_start();
-
+        if (!isset($_SESSION['login']) || $_SESSION['login'] == '') {
+            $_SESSION['login'] = '';
+            $_SESSION['hash'] = -1;
+        }
         ?>
         <div class="navbar navbar-dark bg-primary shadow-sm">
             <div class="container">
@@ -43,8 +46,11 @@
 
                         <input type="hidden" value="logout" name="action">
                         <div class="col-12 col-sm-12 col-md-12 col-lg-auto col-xl-auto mb-sm-2 mb-md-2 mb-lg-0">
-                            <a class="btn btn-primary rounded-pill w-100" href="profil.php"><?= $_SESSION['login'] ?></a>
-
+                            <?php if ($_SESSION['role'] == 1) { ?>
+                                <a class="btn btn-primary rounded-pill w-100" href="adminProfil.php"><?= $_SESSION['login'] ?></a>
+                            <?php } else { ?>
+                                <a class="btn btn-primary rounded-pill w-100" href="profil.php"><?= $_SESSION['login'] ?></a>
+                            <?php } ?>
                         </div>
 
                         <input type="submit" class="btn btn-primary rounded-pill w-100" value="Выйти">
@@ -102,9 +108,26 @@
             $flag = $_GET['flag'];
         }
 
+
+
+
         $db = pg_connect("host=localhost port=5433 user=postgres dbname=olegDB password=postgres")
             or die('Не удалось подключиться к БД: ' . pg_last_error());
-        $query = 'SELECT * FROM inc_idea WHERE status=' . $flag;
+
+        switch ($flag) {
+            case 0:
+                $query = 'SELECT * FROM inc_idea ';
+                break;
+            case 1:
+                $query = 'SELECT * FROM inc_idea WHERE status != 5 and status != 8';
+                break;
+            case 2:
+                $query = 'SELECT * FROM inc_idea WHERE status = 5 or status = 8';
+                break;
+            case 3:
+                $query = 'SELECT * FROM inc_idea WHERE status = 4 or status = 7';
+                break;
+        }
         $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
         ?>
 
@@ -114,7 +137,7 @@
                     <?php
                     while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
 
-                        $query_likes = 'SELECT * FROM inc_idea_vote WHERE inc_idea_vote.user_id=' . $_SESSION['userId'] . ' and inc_idea_vote.idea_id=' . $line['id'];
+                        $query_likes = 'SELECT * FROM inc_idea_vote WHERE inc_idea_vote.user_id=' . $_SESSION['hash'] . ' and inc_idea_vote.idea_id=' . $line['id'];
                         $result_likes = pg_query($query_likes) or die('Ошибка запроса: ' . pg_last_error());
                         $likes_line = pg_fetch_array($result_likes, null, PGSQL_ASSOC);
 
@@ -171,12 +194,21 @@
                                                 </button>
                                             </div>
                                             <div class="col-auto">
-                                                <button class="btn btn-<?= $put_like ?>success" id="like_btn<?= $line['id'] ?>" value="<?= $likeBool ?>" style="border-radius: 15px;" onclick="DBAddLike(<?= $line['id'] ?>)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
-                                                        <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z" />
-                                                    </svg></button>
-                                                <button class="btn btn-<?= $put_dislike ?>danger" id="dis_btn<?= $line['id'] ?>" value=" <?= $disBool ?>" style="border-radius: 15px;" onclick="DBAddDislike(<?= $line['id'] ?>)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                                                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z" />
-                                                    </svg></button>
+                                                <?php if ($_SESSION['login'] != '') { ?>
+                                                    <button class="btn btn-<?= $put_like ?>success" id="like_btn<?= $line['id'] ?>" value="<?= $likeBool ?>" style="border-radius: 15px;" onclick="DBAddLike(<?= $line['id'] ?>)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                                                            <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z" />
+                                                        </svg></button>
+                                                    <button class="btn btn-<?= $put_dislike ?>danger" id="dis_btn<?= $line['id'] ?>" value=" <?= $disBool ?>" style="border-radius: 15px;" onclick="DBAddDislike(<?= $line['id'] ?>)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z" />
+                                                        </svg></button>
+                                                <?php } else { ?>
+                                                    <a class="btn btn-outline-success" id="like_btn" value="" style="border-radius: 15px;" href="authSuggestion.php"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                                                            <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z" />
+                                                        </svg></a>
+                                                    <a class="btn btn-outline-danger" id="dis_btn" value="" style="border-radius: 15px;" href="authSuggestion.php"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z" />
+                                                        </svg></a>
+                                                <?php } ?>
                                             </div>
                                         </div>
                                     </div>
@@ -267,24 +299,35 @@
                                         <div class="comment_push mb-3">
                                             <div class="container-lg">
 
-                                                <div class="input-group" id="input-group<?= $curId ?>">
+                                                <?php if ($_SESSION['login'] != '') { ?>
+                                                    <div class="input-group" id="input-group<?= $curId ?>">
 
-                                                    <?php $curId = $line['id'];
-                                                    ?>
-                                                    <textarea name="hide" style="display:none;" class="form-control" style="border: none;" id="answerInputArea<?= $curId ?>" type="text" placeholder="Ответить на комментарий" required></textarea>
+                                                        <?php $curId = $line['id'];
+                                                        ?>
+                                                        <textarea name="hide" style="display:none;" class="form-control" style="border: none;" id="answerInputArea<?= $curId ?>" type="text" placeholder="Ответить на комментарий" required></textarea>
 
-                                                    <textarea class="form-control" style="border: none;" id="commentInputArea<?= $curId ?>" type="text" placeholder="Оставить комментраий" name="comment_push_enter" required></textarea>
+                                                        <textarea class="form-control" style="border: none;" id="commentInputArea<?= $curId ?>" type="text" placeholder="Оставить комментраий" name="comment_push_enter" required></textarea>
 
-                                                    <div class="input-group-append" id="commentInputDiv<?= $curId ?>">
-                                                        <button type="button" id="commentInputBtn<?= $curId ?>" class="btn" style="" type="" onclick="DBAddComment(<?= $curId ?>)">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
-                                                                <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zM4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z" />
-                                                            </svg>
-                                                        </button>
+                                                        <div class="input-group-append" id="commentInputDiv<?= $curId ?>">
+
+                                                            <button type="button" id="commentInputBtn<?= $curId ?>" class="btn" style="" type="" onclick="DBAddComment(<?= $curId ?>)">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
+                                                                    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zM4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z" />
+                                                                </svg>
+                                                            </button>
+
+                                                        </div>
 
                                                     </div>
-
-                                                </div>
+                                                <?php } else { ?>
+                                                    <div class="container">
+                                                        <div class="row justify-content-center">
+                                                            <input class="form-control" type="text" value="Комментарии доступны только авторизированным пользователям" aria-label="Disabled input example" disabled readonly>
+                                                            <a class="btn btn-primary" style="margin-top: 1rem;" href="authSuggestion.php" role="button">Войти</a>
+                                                        </div>
+                                                    </div>
+                                                    </a>
+                                                <?php } ?>
                                                 <div class="w-100" id="w-100"></div>
                                                 <div id="commentErr<?= $curId ?>" class="d-none" style="color: red;">
                                                     Пожалуйста введите текст

@@ -23,6 +23,9 @@
                     </svg> -->
                     <strong>Инкубатор идей</strong>
                 </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
             </div>
         </div>
     </header>
@@ -30,7 +33,7 @@
     <section class="text-center container">
         <div class="row py-lg-5">
             <div class="col-lg-6 col-md-8 mx-auto">
-                <h1 class="fw-light">Вход</h1>
+                <h4 class="fw-light">Войдите в свою учётную запись, чтобы оставить оценку или комментарий на идею</h1>
             </div>
         </div>
     </section>
@@ -38,30 +41,13 @@
 
 
     <div class="container">
-        <form id="checkLog" action="loginScript.php" enctype="multipart/form-data" name="login" method="POST">
-            <div class="row justify-content-center">
-                <div class="col-auto">
-
-                    <div class="input-group mb-3">
-
-                        <input type="text" name="login" class="form-control" placeholder="Логин" aria-label="Username" aria-describedby="basic-addon1">
-                    </div>
-
-                    <div class="input-group mb-3">
-
-                        <input type="text" class="form-control" placeholder="Парлоь" aria-label="Password" aria-describedby="basic-addon1">
-                    </div>
-
-
-                </div>
+        <div class="row justify-content-center">
+            <div class="col-auto">
+                <a class="btn btn-primary" href="login.php" role="button">Войти</a>
+                <a class="btn btn-primary" href="index.php" role="button">Назад</a>
             </div>
-            <div class="row justify-content-center">
-                <div class="col-auto">
-                    <button class="btn btn-primary" id="submit-btn" type="submit">Войти</button>
-                    <input type="hidden" name="action" value="login">
-                </div>
-            </div>
-        </form>
+        </div>
+
     </div>
 
 

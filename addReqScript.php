@@ -138,7 +138,7 @@ if (isset($_POST['title_req']) && isset($_POST['text_req'])) {
     $user = $_SESSION['userId'];
     $postTime = date('d.m.Y H:i:s');
     $count = pg_fetch_row(pg_query($db, "SELECT count(*) FROM inc_idea"));
-    $res = pg_query($db, "INSERT into inc_idea VALUES(" . $count[0] . ", '$title', '$descr', '$user', 0, '$postTime', '$postTime', '$postTime', '$postTime', '$postTime', '$postTime','$uniq_path', 0, 0, 0, 0)");
+    $res = pg_query($db, "INSERT into inc_idea VALUES(" . $count[0] . ", '$title', '$descr', '$user', 1, '$postTime', '$postTime', '$postTime', '$postTime', '$postTime', '$postTime','$uniq_path', 0, 0, 0, 0)");
     //header('Location:index.php');
 }
 
