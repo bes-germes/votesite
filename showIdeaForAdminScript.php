@@ -66,7 +66,6 @@ if (isset($_POST['postId'])) {
 
         $result = pg_query($db, "SELECT * FROM inc_idea WHERE" . $_POST['postId']);
         $line = pg_fetch_assoc($result);
-        $cur_data = date('d.m.Y H:i:s');
         if ($line['image'] == null) {
             $link_image = "assets\images\intro.jpg";
         } else {
@@ -95,11 +94,11 @@ if (isset($_POST['postId'])) {
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-auto">
-                    <button type="button" class="btn btn-success" onclick="denyIdea(<?= $_POST['postId'] ?>, 2)">Принять</button>
+                    <button type="button" class="btn btn-success" onclick="acceptIdea()">Принять</button>
                 </div>
                 <div class="col-auto">
 
-                    <button type="button" class="btn btn-primary mb-3" onclick="denyIdea(<?= $_POST['postId'] ?>, 8)">Отклонить</button>
+                    <button type="button" class="btn btn-primary mb-3" onclick="updateIdea(<?= $_POST['postId'] ?>, 8)">Отклонить</button>
 
                 </div>
             </div>
@@ -109,8 +108,7 @@ if (isset($_POST['postId'])) {
                     <label for="staticEmail" class="form-control-plaintext">Дата начала голосования</label>
                 </div>
                 <div class="col-auto">
-                    <label for="inputPassword2" class="visually-hidden"></label>
-                    <input class="form-control" id="curData" type="text" value="<?= $cur_data ?>" aria-label="Disabled input example" disabled readonly>
+                    <input type="date" class="form-control" id="start_vote_field" name="trip-start">
                 </div>
 
                 <div class='col-auto'>
@@ -119,14 +117,23 @@ if (isset($_POST['postId'])) {
 
                 <div class="col-auto">
 
-                    <button type="button" class="btn btn-primary mb-3">Опубликовать</button>
-
-
+                    <button type="button" class="btn btn-primary mb-3" onclick="updateIdea(<?= $_POST['postId'] ?>, 3)">Опубликовать</button>
                 </div>
+
             </div>
         </div>
-        <div id="denyErr" class="d-none" style="color: red;">
-            Заявка отклонена
+        <div class="row justify-content-center">
+            <div class="col-auto">
+                <div id="denyErr" class="d-none" style="color: red;">
+                    Заявка отклонена
+                </div>
+                <div id="acceptErr" class="d-none" style="color: green;">
+                    Заявка принята
+                </div>
+                <div id="timeErr" class="d-none" style="color: red;">
+                    Неправильно поставлен срок голосования
+                </div>
+            </div>
         </div>
     <?php
 }

@@ -77,7 +77,7 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-12 col-sm-12 col-md-12 col-lg-auto col-xl-auto mb-sm-2 mb-md-2 mb-lg-0">
-                    <a class="btn btn-primary rounded-pill w-100" href="?flag=0">Рассмотренные идеи</a>
+                    <a class="btn btn-primary rounded-pill w-100" href="?flag=0">Все идеи</a>
                 </div>
                 <div class="col-12 col-sm-12 col-md-12 col-lg-auto col-xl-auto mb-sm-2 mb-md-2 mb-lg-0">
                     <a class="btn btn-primary rounded-pill w-100" href="?flag=1" id="1">Идеи в процессе</a>
@@ -116,19 +116,21 @@
 
         switch ($flag) {
             case 0:
-                $query = 'SELECT * FROM inc_idea ';
+                $query = 'SELECT * FROM inc_idea  WHERE status != 1';
                 break;
             case 1:
-                $query = 'SELECT * FROM inc_idea WHERE status != 5 and status != 8';
+                $query = 'SELECT * FROM inc_idea WHERE status = 4';
                 break;
             case 2:
                 $query = 'SELECT * FROM inc_idea WHERE status = 5 or status = 8';
                 break;
             case 3:
-                $query = 'SELECT * FROM inc_idea WHERE status = 4 or status = 7';
+                $query = 'SELECT * FROM inc_idea WHERE status = 2 or status = 3';
                 break;
         }
         $result = pg_query($query) or die('Ошибка запроса: ' . pg_last_error());
+
+
         ?>
 
         <div class="album py-5 bg-light">
@@ -138,6 +140,25 @@
                     while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
 
                         $query_likes = 'SELECT * FROM inc_idea_vote WHERE inc_idea_vote.user_id=' . $_SESSION['hash'] . ' and inc_idea_vote.idea_id=' . $line['id'];
+
+                        $likes = 0;
+                        $dislikes = 0;
+                        $query_count_vote = 'SELECT * FROM inc_idea_vote WHERE inc_idea_vote.idea_id=' . $line['id'];
+                        $result_count_vote = pg_query($query_count_vote) or die('Ошибка запроса: ' . pg_last_error());
+
+                        while($line_count_vote = pg_fetch_array($result_count_vote, null, PGSQL_ASSOC)){
+                            
+                            if ($line_count_vote['value'] == 1){
+                                $likes ++;
+                            }
+
+                            if ($line_count_vote['value'] == -1){
+                                $dislikes ++;
+                            } 
+                        }
+                        $result_end_vote_time = pg_send_query($db, "SELECT * FROM public.inc_idea WHERE DATE_PART('day', vote_start - vote_finish) < 0  and id = " . $line['id'] . ";");
+                        $res_end_time_vote = pg_get_result($db);
+                        $rows_end_time_vote = pg_num_rows($res_end_time_vote);
                         $result_likes = pg_query($query_likes) or die('Ошибка запроса: ' . pg_last_error());
                         $likes_line = pg_fetch_array($result_likes, null, PGSQL_ASSOC);
 
@@ -194,20 +215,24 @@
                                                 </button>
                                             </div>
                                             <div class="col-auto">
-                                                <?php if ($_SESSION['login'] != '') { ?>
-                                                    <button class="btn btn-<?= $put_like ?>success" id="like_btn<?= $line['id'] ?>" value="<?= $likeBool ?>" style="border-radius: 15px;" onclick="DBAddLike(<?= $line['id'] ?>)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
-                                                            <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z" />
-                                                        </svg></button>
-                                                    <button class="btn btn-<?= $put_dislike ?>danger" id="dis_btn<?= $line['id'] ?>" value=" <?= $disBool ?>" style="border-radius: 15px;" onclick="DBAddDislike(<?= $line['id'] ?>)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                                                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z" />
-                                                        </svg></button>
+                                                <?php if ($rows_end_time_vote > 0) { ?>
+                                                    <?php if ($_SESSION['login'] != '') { ?>
+                                                        <button class="btn btn-<?= $put_like ?>success" id="like_btn<?= $line['id'] ?>" value="<?= $likeBool ?>" style="border-radius: 15px;" onclick="DBAddLike(<?= $line['id'] ?>)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                                                                <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z" />
+                                                            </svg><span id="like-span<?= $line['id'] ?>"><?= $likes?></span></button>
+                                                        <button class="btn btn-<?= $put_dislike ?>danger" id="dis_btn<?= $line['id'] ?>" value=" <?= $disBool ?>" style="border-radius: 15px;" onclick="DBAddDislike(<?= $line['id'] ?>)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                                                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z" />
+                                                            </svg><span id="dis-span<?= $line['id'] ?>"><?= $dislikes?></span></button>
+                                                    <?php } else { ?>
+                                                        <a class="btn btn-outline-success" id="like_btn" value="" style="border-radius: 15px;" href="authSuggestion.php"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                                                                <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z" />
+                                                            </svg><span id="like-span<?= $line['id'] ?>"><?= $likes?></span></a>
+                                                        <a class="btn btn-outline-danger" id="dis_btn" value="" style="border-radius: 15px;" href="authSuggestion.php"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                                                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z" />
+                                                            </svg><span id="dis-span<?= $line['id'] ?>"><?= $dislikes?></span></a>
+                                                    <?php } ?>
                                                 <?php } else { ?>
-                                                    <a class="btn btn-outline-success" id="like_btn" value="" style="border-radius: 15px;" href="authSuggestion.php"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
-                                                            <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z" />
-                                                        </svg></a>
-                                                    <a class="btn btn-outline-danger" id="dis_btn" value="" style="border-radius: 15px;" href="authSuggestion.php"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                                                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z" />
-                                                        </svg></a>
+                                                    <div style="margin-top: 5px;">Закрыто</div>
                                                 <?php } ?>
                                             </div>
                                         </div>

@@ -37,9 +37,17 @@ function DBAddDislike(idx) {
                 if (document.getElementById('like_btn' + idx).classList == 'btn btn-success') {
                     document.getElementById('like_btn' + idx).classList.remove('btn-success');
                     document.getElementById('like_btn' + idx).classList.add('btn-outline-success');
+                    let cur_value_like = document.getElementById('like-span' + idx).innerText;
+                    let int_value_like = parseInt(cur_value_like, 10);
+                    int_value_like--;
+                    document.getElementById('like-span' + idx).innerText = int_value_like;
                 }
                 document.getElementById('like_btn' + idx).value = 0;
                 document.getElementById('dis_btn' + idx).value = -1;
+                let cur_value_dis = document.getElementById('dis-span' + idx).innerText;
+                let int_value_dis = parseInt(cur_value_dis, 10);
+                int_value_dis++;
+                document.getElementById('dis-span' + idx).innerText = int_value_dis;
             }
             else {
                 document.getElementById('dis_btn' + idx).classList.add('btn-outline-danger');
@@ -47,6 +55,10 @@ function DBAddDislike(idx) {
 
                 document.getElementById('like_btn' + idx).value = 0;
                 document.getElementById('dis_btn' + idx).value = 0;
+                let cur_value_dis = document.getElementById('dis-span' + idx).innerText;
+                let int_value_dis = parseInt(cur_value_dis, 10);
+                int_value_dis--;
+                document.getElementById('dis-span' + idx).innerText = int_value_dis;
             }
             // location.reload();
 
@@ -82,21 +94,31 @@ function DBAddLike(idx) {
             if (document.getElementById('like_btn' + idx).classList == 'btn btn-outline-success') {
                 document.getElementById('like_btn' + idx).classList.add('btn-success');
                 document.getElementById('like_btn' + idx).classList.remove('btn-outline-success');
-                document.getElementById('dis_btn' + idx).classList.add('btn-outline-danger');
-                document.getElementById('dis_btn' + idx).classList.remove('btn-danger');
-                document.getElementById('like_btn' + idx).value = 1;
-                document.getElementById('dis_btn' + idx).value = 0;
+                if (document.getElementById('dis_btn' + idx).classList == 'btn btn-danger') {
+                    document.getElementById('dis_btn' + idx).classList.remove('btn-danger');
+                    document.getElementById('dis_btn' + idx).classList.add('btn-outline-danger');
+                    let cur_value_dis = document.getElementById('dis-span' + idx).innerText;
+                    let int_value_dis = parseInt(cur_value_dis, 10);
+                    int_value_dis--;
+                    document.getElementById('dis-span' + idx).innerText = int_value_dis;
+                }
+                document.getElementById('like_btn' + idx).value = 0;
+                document.getElementById('dis_btn' + idx).value = -1;
+                let cur_value_like = document.getElementById('like-span' + idx).innerText;
+                let int_value_like = parseInt(cur_value_like, 10);
+                int_value_like++;
+                document.getElementById('like-span' + idx).innerText = int_value_like;
             }
             else {
                 document.getElementById('like_btn' + idx).classList.add('btn-outline-success');
                 document.getElementById('like_btn' + idx).classList.remove('btn-success');
-                if (document.getElementById('dis_btn' + idx).classList == 'btn btn-success') {
-                    document.getElementById('dis_btn' + idx).classList.remove('btn-danger');
-                    document.getElementById('dis_btn' + idx).classList.add('btn-outline-danger');
-                    document.getElementById('like_btn' + idx).value = false;
-                }
+
                 document.getElementById('like_btn' + idx).value = 0;
                 document.getElementById('dis_btn' + idx).value = 0;
+                let cur_value_like = document.getElementById('like-span' + idx).innerText;
+                let int_value_like = parseInt(cur_value_like, 10);
+                int_value_like--;
+                document.getElementById('like-span' + idx).innerText = int_value_like;
             }
 
         },

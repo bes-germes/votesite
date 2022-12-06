@@ -59,9 +59,9 @@
 
     $result_all = pg_query($db, "SELECT * FROM inc_idea ");
 
-    $result_end_vote_time = pg_query($db, "SELECT * FROM public.inc_idea WHERE DATE_PART('day', vote_start - vote_finish) <= 0;");
+    $result_end_vote_time = pg_query($db, "SELECT * FROM public.inc_idea WHERE DATE_PART('day',  vote_finish - vote_start) <= 0;");
 
-    $result_end_freetry_time = pg_query($db, "SELECT * FROM public.inc_idea WHERE DATE_PART('day', freetry_start - freetry_finish) <= 0;");
+    $result_end_freetry_time = pg_query($db, "SELECT * FROM public.inc_idea WHERE DATE_PART('day', freetry_finish - freetry_start) <= 0;");
 
     $result_check = pg_query($db, "SELECT * FROM inc_idea WHERE status = 1");
 
@@ -209,7 +209,7 @@
                             <div class="container">
                                 <div class="row justify-content-between">
                                     <div class="col-auto">
-                                        <p class="text-danger">Модериются</p>
+                                        <p class="text-info">Модериются</p>
                                     </div>
 
                                 </div>

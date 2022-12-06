@@ -5,9 +5,12 @@ if (isset($_POST['idPost']) && isset($_POST['status'])) {
         or die('Не удалось подключиться к БД: ' . pg_last_error());
 
 
-    $quary = "UPDATE inc_idea SET status = " . $_POST['status'] . " WHERE id = " . $_POST['idPost'];
-    // $res = pg_query($db, (string) $quary);
+    $quary = "UPDATE inc_idea SET status = " . $_POST['status'] . ", vote_start = '" . date('d.m.Y H:i:s', strtotime($_POST['vote_start'])) . "',vote_finish = '" . date('d.m.Y H:i:s', strtotime($_POST['vote_finish'])) . "' WHERE id = " . $_POST['idPost'];
+    $res = pg_query($db, "UPDATE inc_idea SET status = " . $_POST['status'] . ", vote_start = '" . date('d.m.Y H:i:s', strtotime($_POST['vote_start'])) . "',vote_finish = '" . date('d.m.Y H:i:s', strtotime($_POST['vote_finish'])) . "' WHERE id = " . $_POST['idPost']);
     echo $quary;
-    
-    // $result = pg_query($db, "SELECT * FROM inc_idea WHERE id =" .$_POST['postId']);
+    if ($res) {
+        echo "kryto";
+    } else {
+        echo "ploxo";
+    }
 }

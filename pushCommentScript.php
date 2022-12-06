@@ -17,7 +17,7 @@ $postId = $_POST['idPost'];
 $postTime = date('d.m.Y H:i:s');
 $count = pg_fetch_row(pg_query($db, "SELECT count(*) FROM inc_comment"));
 session_start();
-$autherId = $_SESSION['userId'];
+$autherId = $_SESSION['hash'];
 
 
 
