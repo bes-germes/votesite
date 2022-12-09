@@ -146,16 +146,17 @@
                         $query_count_vote = 'SELECT * FROM inc_idea_vote WHERE inc_idea_vote.idea_id=' . $line['id'];
                         $result_count_vote = pg_query($query_count_vote) or die('Ошибка запроса: ' . pg_last_error());
 
-                        while($line_count_vote = pg_fetch_array($result_count_vote, null, PGSQL_ASSOC)){
-                            
-                            if ($line_count_vote['value'] == 1){
-                                $likes ++;
+                        while ($line_count_vote = pg_fetch_array($result_count_vote, null, PGSQL_ASSOC)) {
+
+                            if ($line_count_vote['value'] == 1) {
+                                $likes++;
                             }
 
-                            if ($line_count_vote['value'] == -1){
-                                $dislikes ++;
-                            } 
+                            if ($line_count_vote['value'] == -1) {
+                                $dislikes++;
+                            }
                         }
+
                         $result_end_vote_time = pg_send_query($db, "SELECT * FROM public.inc_idea WHERE DATE_PART('day', vote_start - vote_finish) < 0  and id = " . $line['id'] . ";");
                         $res_end_time_vote = pg_get_result($db);
                         $rows_end_time_vote = pg_num_rows($res_end_time_vote);
@@ -219,17 +220,17 @@
                                                     <?php if ($_SESSION['login'] != '') { ?>
                                                         <button class="btn btn-<?= $put_like ?>success" id="like_btn<?= $line['id'] ?>" value="<?= $likeBool ?>" style="border-radius: 15px;" onclick="DBAddLike(<?= $line['id'] ?>)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
                                                                 <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z" />
-                                                            </svg><span id="like-span<?= $line['id'] ?>"><?= $likes?></span></button>
+                                                            </svg><span id="like-span<?= $line['id'] ?>"><?= $likes ?></span></button>
                                                         <button class="btn btn-<?= $put_dislike ?>danger" id="dis_btn<?= $line['id'] ?>" value=" <?= $disBool ?>" style="border-radius: 15px;" onclick="DBAddDislike(<?= $line['id'] ?>)"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
                                                                 <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z" />
-                                                            </svg><span id="dis-span<?= $line['id'] ?>"><?= $dislikes?></span></button>
+                                                            </svg><span id="dis-span<?= $line['id'] ?>"><?= $dislikes ?></span></button>
                                                     <?php } else { ?>
                                                         <a class="btn btn-outline-success" id="like_btn" value="" style="border-radius: 15px;" href="authSuggestion.php"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
                                                                 <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z" />
-                                                            </svg><span id="like-span<?= $line['id'] ?>"><?= $likes?></span></a>
+                                                            </svg><span id="like-span<?= $line['id'] ?>"><?= $likes ?></span></a>
                                                         <a class="btn btn-outline-danger" id="dis_btn" value="" style="border-radius: 15px;" href="authSuggestion.php"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
                                                                 <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z" />
-                                                            </svg><span id="dis-span<?= $line['id'] ?>"><?= $dislikes?></span></a>
+                                                            </svg><span id="dis-span<?= $line['id'] ?>"><?= $dislikes ?></span></a>
                                                     <?php } ?>
                                                 <?php } else { ?>
                                                     <div style="margin-top: 5px;">Закрыто</div>
@@ -281,6 +282,7 @@
                                                     if ($count[0] != 0) {
                                                     ?>
                                                         <button type="button" id="rpy_btn<?= $comment['id'] ?>" value="<?= $comment['id'] ?>" class="btn" style="max-width: 100px; color: black; background-color: white; font-size: 13px;" onclick="DBShowReply(<?= $comment['id'] ?>, <?= $comment['idea_id'] ?>)">Развернуть</button>
+
                                                     <?php
                                                     } else {
                                                     ?>
@@ -306,13 +308,14 @@
                                                                     <?=
                                                                     date('d.m.Y H:i:s', strtotime($comment_reply['created']));
                                                                     ?>
-                                                                    <button type="button" id="answer_btn<?= $comment['id'] ?>" value="<?= $comment['id'] ?>" class="btn" style="max-width: 100px; color: black; background-color: white; font-size: 13px;" onclick="DBAnwerComment(<?= $comment['id'] ?>, <?= $comment['idea_id'] ?>)">Ответить</button>
+                                                                    <button type="button" id="answer_btn<?= $comment['id'] ?>" value="<?= $comment['id'] ?>" class="btn" style="max-width: 100px; color: black; background-color: white; font-size: 13px;" onclick="DBAnwerToComment(<?= $comment['id'] ?>, <?= $comment['idea_id'] ?>)">Ответить</button>
                                                                 </div>
 
                                                         <?php
                                                             }
                                                         }
                                                         ?>
+                                                        <button type="button" id="rpy_btn<?= $comment['id'] ?>" value="<?= $comment['id'] ?>" class="btn" style="max-width: 100px; color: black; background-color: white; font-size: 13px;" onclick="DBAnwerToComment(<?= $comment['id'] ?>, <?= $comment['idea_id'] ?>)">Ответить</button>
                                                     </div>
                                                 </div>
 
@@ -329,9 +332,9 @@
 
                                                         <?php $curId = $line['id'];
                                                         ?>
-                                                        <textarea name="hide" style="display:none;" class="form-control" style="border: none;" id="answerInputArea<?= $curId ?>" type="text" placeholder="Ответить на комментарий" required></textarea>
+                                                        <textarea name="hide" style="display:none;" class="form-control" id="answerInputArea<?= $curId ?>" type="text" placeholder="Ответить на комментарий" required></textarea>
 
-                                                        <textarea class="form-control" style="border: none;" id="commentInputArea<?= $curId ?>" type="text" placeholder="Оставить комментраий" name="comment_push_enter" required></textarea>
+                                                        <textarea class="form-control" id="commentInputArea<?= $curId ?>" type="text" placeholder="Оставить комментраий" name="comment_push_enter" required></textarea>
 
                                                         <div class="input-group-append" id="commentInputDiv<?= $curId ?>">
 
@@ -343,11 +346,22 @@
 
                                                         </div>
 
+
+                                                    </div>
+                                                    <div class="row" style="margin-top: 1rem;">
+                                                        <div class="col">
+                                                            <!-- <a type="button" href="wantToBeExuter.php" class="btn btn-outline-secondary btn-sm">Хочу стать исполнителем идеи!</a> -->
+                                                            <form id="checkInOut" action="wantToBeExuter.php" enctype="multipart/form-data" method="POST">
+
+                                                                <input type="hidden" value="<?= $curId ?>" name="action">
+                                                                <input type="submit" class="btn btn-outline-secondary btn-sm" value="Хочу стать исполнителем идеи!">
+                                                            </form>
+                                                        </div>
                                                     </div>
                                                 <?php } else { ?>
                                                     <div class="container">
                                                         <div class="row justify-content-center">
-                                                            <input class="form-control" type="text" value="Комментарии доступны только авторизированным пользователям" aria-label="Disabled input example" disabled readonly>
+                                                            <input class="form-control" type="text" value="Оставлять комментарии могут только авторизированные пользователи" aria-label="Disabled input example" disabled readonly>
                                                             <a class="btn btn-primary" style="margin-top: 1rem;" href="authSuggestion.php" role="button">Войти</a>
                                                         </div>
                                                     </div>

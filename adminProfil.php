@@ -59,7 +59,7 @@
 
     $result_all = pg_query($db, "SELECT * FROM inc_idea ");
 
-    $result_end_vote_time = pg_query($db, "SELECT * FROM public.inc_idea WHERE DATE_PART('day',  vote_finish - vote_start) <= 0;");
+    $result_end_vote_time = pg_query($db, "SELECT * FROM public.inc_idea WHERE DATE_PART('day',  vote_finish - '" . date('d.m.Y') . "') <= 0;");
 
     $result_end_freetry_time = pg_query($db, "SELECT * FROM public.inc_idea WHERE DATE_PART('day', freetry_finish - freetry_start) <= 0;");
 
@@ -220,7 +220,6 @@
                                             <button type="submit" id="show_btn" value="" class="btn" style="max-width: 100px; color: black; background-color: white; font-size: 13px;">Обзор</button>
                                         </form>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
@@ -292,6 +291,14 @@
 
                                         <p class="text-info"> <?= $idea_status ?></p>
 
+                                    </div>
+                                </div>
+                                <div class="row justify-content-between">
+                                    <div class="col-auto">
+                                        <form id="id" action="showIdeaForAdminScriptEndVoteTime.php" enctype="multipart/form-data" name="postId" method="POST">
+                                            <input type="hidden" value="<?= $line['id'] ?>" name="postId">
+                                            <input type="submit" class="btn btn-primary rounded-pill w-100" value="Обзор">
+                                        </form>
                                     </div>
                                 </div>
                             </div>
