@@ -18,7 +18,7 @@ function DBAddComment(idx) {
             let ComIdx = GetCurBDCommCount(idx);
             var today = new Date();
             var now = today.toLocaleString();
-            $('#commnet_container' + idx).append(" <div class='comment_body' id='comment_body" + ComIdx + "'><div class='comment_head'>Auther</div><div class='comment_inner'>" + comment + "</div><div class='comment_time'>" + now + "</div><button type='button' id='rpy_btn" + ComIdx + "' value='" + ComIdx + "' class='btn' style='max-width: 100px; color: black; background-color: white; font-size: 13px; ' onclick='DBAnwerToComment(" + ComIdx + ", " + idx + ")'>Ответить</button><div class='d-none' id='comment_reply" + ComIdx + "' style='flex-direction: column;display: flex;padding: 10px;margin-right: 65px;margin-left: 60px;'></div></div>");
+            $('#commnet_container' + idx).append(" <div class='comment_body' id='comment_body" + ComIdx + "'><div class='comment_head'>Author</div><div class='comment_inner'>" + comment + "</div><div class='comment_time'>" + now + "</div><button type='button' id='rpy_btn" + ComIdx + "' value='" + ComIdx + "' class='btn' style='max-width: 100px; color: black; background-color: white; font-size: 13px; ' onclick='DBAnwerToComment(" + ComIdx + ", " + idx + ")'>Ответить</button><div class='d-none' id='comment_reply" + ComIdx + "' style='flex-direction: column;display: flex;padding: 10px;margin-right: 65px;margin-left: 60px;'></div></div>");
 
         },
     });

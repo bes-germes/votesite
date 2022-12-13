@@ -49,7 +49,7 @@
 
                     <div class="input-group mb-3">
 
-                        <input type="text" class="form-control" placeholder="Парлоь" aria-label="Password" aria-describedby="basic-addon1">
+                        <input type="text" class="form-control" placeholder="Пароль" aria-label="Password" aria-describedby="basic-addon1">
                     </div>
 
 

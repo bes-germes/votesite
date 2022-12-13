@@ -1,15 +1,8 @@
 <?php
 
-session_start();
-
-if ($_SESSION['role'] != 1) {
-    http_response_code(401);
-    header('Location:index.php');
-    exit;
-}
-
 if (isset($_POST['postId'])) {
 
+    session_start();
 ?>
     <!DOCTYPE html>
     <html lang="en">
@@ -18,10 +11,9 @@ if (isset($_POST['postId'])) {
         <meta charset="UTF-8">
         <script src="http://code.jquery.com/jquery-2.0.2.min.js"></script>
         <script type="text/javascript" src="jquery.js"></script>
-        <script src="http://localhost/votesite/jsScripts/wantToBeExuterShowSucces.js"></script>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-
+        <script src="http://localhost/votesite/jsScripts/wantToBeExuterShowSucces.js"></script>
         <script src="http://localhost/votesite/jsScripts/adminAcceptDeniedIdea.js"></script>
         <link rel="stylesheet" href="assets/css/style.css">
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -64,7 +56,7 @@ if (isset($_POST['postId'])) {
 
         $db = pg_connect("host=localhost port=5433 user=postgres dbname=olegDB password=postgres")
             or die('Не удалось подключиться к БД: ' . pg_last_error());
-      
+
 
         $result = pg_query($db, "SELECT * FROM inc_idea WHERE id = " . $_POST['postId']);
         $line = pg_fetch_assoc($result);
@@ -107,7 +99,6 @@ if (isset($_POST['postId'])) {
                             <h5 class="card-title"><?= $line['title'] ?></h5>
                             <p class="card-text"><?= $line['description'] ?></p>
                         </div>
-
                         <div class="card-body">
 
                             <div class="container">
@@ -124,95 +115,34 @@ if (isset($_POST['postId'])) {
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        <div class="container">
-            <div class="row justify-content-center">
-                <!-- <div class="col-auto">
-                    <button type="button" class="btn btn-success" onclick="acceptIdea()">Поставить срок исполнения</button>
-                </div> -->
-                <!-- <div class="col-auto">
 
-                    <button type="button" class="btn btn-primary mb-3" onclick="updateIdea(<?= $_POST['postId'] ?>, 8)">По идее на этом этапе нельзя удалять, но пусть будет</button>
-
-                </div> -->
-            </div>
-            <div class="row justify-content-center" id="acceptIdea" style="margin-top: 2rem;">
-
-                <div class="col-auto">
-                    <label for="staticEmail" class="form-control-plaintext">Дата начала испонения</label>
-                </div>
-                <div class="col-auto">
-                    <input type="date" class="form-control" id="start_vote_field" name="trip-start">
-                </div>
-
-                <div class='col-auto'>
-                    <input type="date" class="form-control" id="end_vote_field" name="trip-start">
-                </div>
-
-            </div>
-            <div class="row justify-content-center" style="margin-top: 1rem;">
-                <div class="col-auto">
-                    <ul class="list-group">
-                        <?php
-                        $cur_id = 0;
-
-                        while ($line_executers = pg_fetch_array($result_executers, null, PGSQL_ASSOC)) {
-                            $result_user = pg_query($db, "SELECT * FROM public.student WHERE id = " . $line_executers['user_id']);
-                            $line_user = pg_fetch_assoc($result_user);
-
-                            if ($line['author'] == $line_executers['user_id']) {
-                                $is_leader = " list-group-item-primary";
-                                $is_leader_status = "Лидер";
-                            } else {
-                                $is_leader = "";
-                                $is_leader_status = "";
-                            }
-
-                        ?>
-                            <li class="list-group-item<?= $is_leader ?>"><?= $line_user['first_name'] ?> <?= $line_user['middle_name'] ?> <?= $line_user['last_name'] ?> <?= $is_leader_status ?>
-                                <div class="form-check form-switch">
-
-                                    <input class="form-check-input" type="checkbox" value="<?= $line_executers['user_id'] ?>" id="flexSwitchCheckDefault">
-                                    <label class="form-check-label" for="flexSwitchCheckDefault">В команду</label>
-                                </div>
-                            </li>
-
-                        <?php
-                            $cur_id++;
-                        } ?>
-
-                    </ul>
-                    <div class="row justify-content-center" style="margin-top: 1rem;">
+                    <div class="row justify-content-center">
                         <div class="col-auto">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefaultAll" onchange="chooseAll()">
-                                <label class="form-check-label" for="flexSwitchCheckDefaultAll">Выбрать всех</label>
-                            </div>
+                            Откликнулись на идею
                         </div>
                     </div>
+                    <?php $result_executers = pg_query($db, "SELECT * FROM public.inc_executors WHERE user_id != " . $_SESSION['hash'] . " and idea_id =" . $_POST['postId']);
+
+
+                    while ($line_executers = pg_fetch_array($result_executers, null, PGSQL_ASSOC)) {
+                        $result_user = pg_query($db, "SELECT * FROM public.student WHERE id = " . $line_executers['user_id']);
+                        $line_user = pg_fetch_assoc($result_user);
+
+                        $results_group = pg_query($db, "SELECT * FROM students_to_groups WHERE student_id=" . $_SESSION['hash']);
+                        $line_group = pg_fetch_assoc($results_group);
+
+                        $results_group_name = pg_query($db, 'SELECT * FROM public."group" WHERE id=' . $line_group['group_id']);
+                        $line_group_name = pg_fetch_assoc($results_group_name);
+
+                    ?>
+                        <li class="list-group-item"><?= $line_user['first_name'] ?> <?= $line_user['middle_name'] ?> <?= $line_user['last_name'] ?> <strong> Группа: <?= $line_group_name['name']  ?></strong>
+                        </li>
+                    <?php }
+                    ?>
+
                 </div>
-                <div class="row justify-content-center" id="acceptIdea" style="margin-top: 1rem;">
-                    <div class="col-auto">
-                        <button type="button" class="btn btn-primary mb-3" onclick="addExecuters(<?= $_POST['postId'] ?>, 3)">Опубликовать</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row justify-content-center">
-            <div class="col-auto">
-                <div id="denyErr" class="d-none" style="color: red;">
-                    Не выбраны исполнители
-                </div>
-                <div id="acceptErr" class="d-none" style="color: red;">
-                    Началось исполнение идеи
-                </div>
-                <div id="timeErr" class="d-none" style="color: red;">
-                    Неправильно поставлен срок голосования
-                </div>
-                
             </div>
         </div>
     <?php
 }
+    ?>

@@ -50,7 +50,7 @@
 
     $db = pg_connect("host=localhost port=5433 user=postgres dbname=olegDB password=postgres")
         or die('Не удалось подключиться к БД: ' . pg_last_error());
-        
+
     $result_student = pg_query($db, "SELECT * FROM student WHERE id=" . $_SESSION['hash']);
     $line_student = pg_fetch_assoc($result_student);
 
@@ -70,6 +70,8 @@
 
 
     $result_accepted = pg_query($db, "SELECT * FROM inc_idea WHERE author='" . $_SESSION['hash'] . "' and (status = 2 or status = 7)");
+
+
 
     ?>
     <div class="container">
@@ -112,6 +114,14 @@
 
             <?php
             while ($line = pg_fetch_array($result_all, null, PGSQL_ASSOC)) {
+
+                $want_to_join =  pg_fetch_row(pg_query($db, "SELECT count(*) FROM inc_executors WHERE role = 0 and idea_id = " . $line['id']));
+
+                if ($want_to_join[0] - 1 <= 0) {
+                    $new_req = '';
+                } else {
+                    $new_req = $want_to_join[0] - 1 . " New";
+                }
                 if ($line['image'] == null) {
                     $link_image = "assets\images\intro.jpg";
                 } else {
@@ -173,11 +183,18 @@
                         <div class="card-body">
 
                             <div class="container">
+                                <div class="row">
+                                    <div class="col-auto">
+                                        <p class="text-<?= $idea_status_color ?>"> <?= $idea_status ?><span class="badge badge-secondary" style="color: red;"><?= $new_req ?></span></p>
+                                    </div>
+                                </div>
                                 <div class="row justify-content-between">
                                     <div class="col-auto">
-                                        <p class="text-<?= $idea_status_color ?>"> <?= $idea_status ?></p>
+                                        <form id="id" action="showIdeaForUserScript.php" enctype="multipart/form-data" name="postId" method="POST">
+                                            <input type="hidden" value="<?= $line['id'] ?>" name="postId">
+                                            <input type="submit" class="btn btn-primary rounded-pill w-100" value="Обзор">
+                                        </form>
                                     </div>
-
                                 </div>
                             </div>
                         </div>

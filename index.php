@@ -116,10 +116,10 @@
 
         switch ($flag) {
             case 0:
-                $query = 'SELECT * FROM inc_idea  WHERE status != 1';
+                $query = 'SELECT * FROM inc_idea  WHERE status != 1 and status != 9 ORDER BY status';
                 break;
             case 1:
-                $query = 'SELECT * FROM inc_idea WHERE status = 4';
+                $query = 'SELECT * FROM inc_idea WHERE status = 6';
                 break;
             case 2:
                 $query = 'SELECT * FROM inc_idea WHERE status = 5 or status = 8';
@@ -157,7 +157,7 @@
                             }
                         }
 
-                        $result_end_vote_time = pg_send_query($db, "SELECT * FROM public.inc_idea WHERE DATE_PART('day', vote_start - vote_finish) < 0  and id = " . $line['id'] . ";");
+                        $result_end_vote_time = pg_send_query($db, "SELECT * FROM public.inc_idea WHERE DATE_PART('day', vote_finish - '" . date('d.m.Y') . "') >= 0 and DATE_PART('day', vote_start - '" . date('d.m.Y') . "') <= 0 and id = " . $line['id'] . ";");
                         $res_end_time_vote = pg_get_result($db);
                         $rows_end_time_vote = pg_num_rows($res_end_time_vote);
                         $result_likes = pg_query($query_likes) or die('Ошибка запроса: ' . pg_last_error());
@@ -233,7 +233,12 @@
                                                             </svg><span id="dis-span<?= $line['id'] ?>"><?= $dislikes ?></span></a>
                                                     <?php } ?>
                                                 <?php } else { ?>
-                                                    <div style="margin-top: 5px;">Закрыто</div>
+                                                    <button class="btn btn-<?= $put_like ?>success" id="like_btn<?= $line['id'] ?>" value="<?= $likeBool ?>" style="border-radius: 15px;" disabled><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-lg" viewBox="0 0 16 16">
+                                                            <path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022Z" />
+                                                        </svg><span id="like-span<?= $line['id'] ?>"><?= $likes ?></span></button>
+                                                    <button class="btn btn-<?= $put_dislike ?>danger" id="dis_btn<?= $line['id'] ?>" value=" <?= $disBool ?>" style="border-radius: 15px;" disabled><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                                            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z" />
+                                                        </svg><span id="dis-span<?= $line['id'] ?>"><?= $dislikes ?></span></button>
                                                 <?php } ?>
                                             </div>
                                         </div>
@@ -248,7 +253,7 @@
                                         <div class="exit" style="margin-left: 97%">
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
                                         </div>
-                                        <img class="card-img-top" src="assets\images\intro.jpg" style="width: 30%; height: 30%; margin: auto;" alt="Card image cap">
+                                        <img class="card-img-top" src="<?= $link_image ?>" style="width: 30%; height: 30%; margin: auto; max-height: 400px;" alt="Card image cap">
                                         <div class="modal-header">
                                             <h5 class="modal-title" id="exampleModalLabel"><?= $line['title'] ?></h5>
                                         </div>

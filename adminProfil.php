@@ -59,13 +59,41 @@
 
     $result_all = pg_query($db, "SELECT * FROM inc_idea ");
 
-    $result_end_vote_time = pg_query($db, "SELECT * FROM public.inc_idea WHERE DATE_PART('day',  vote_finish - '" . date('d.m.Y') . "') <= 0;");
+    $result_end_vote_time = pg_query($db, "SELECT * FROM public.inc_idea WHERE DATE_PART('day',  vote_finish - '" . date('d.m.Y') . "') <= 0 and status != 6;");
 
-    $result_end_freetry_time = pg_query($db, "SELECT * FROM public.inc_idea WHERE DATE_PART('day', freetry_finish - freetry_start) <= 0;");
+    $result_end_freetry_time = pg_query($db, "SELECT * FROM public.inc_idea WHERE DATE_PART('day', freetry_finish -'" . date('d.m.Y') . "') <= 0;");
 
     $result_check = pg_query($db, "SELECT * FROM inc_idea WHERE status = 1");
 
     $result_banned = pg_query($db, "SELECT * FROM inc_idea  WHERE status = 8");
+
+
+
+    while ($line = pg_fetch_array($result_end_vote_time, null, PGSQL_ASSOC)) {
+        $likes = 0;
+        $dislikes = 0;
+        $query_count_vote = 'SELECT * FROM inc_idea_vote WHERE inc_idea_vote.idea_id=' . $line['id'];
+        $result_count_vote = pg_query($query_count_vote) or die('Ошибка запроса: ' . pg_last_error());
+
+        while ($line_count_vote = pg_fetch_array($result_count_vote, null, PGSQL_ASSOC)) {
+
+            if ($line_count_vote['value'] == 1) {
+                $likes++;
+            }
+
+            if ($line_count_vote['value'] == -1) {
+                $dislikes++;
+            }
+        }
+
+        if ($likes > $dislikes) {
+            pg_query($db, "UPDATE inc_idea SET status = 4 WHERE id = " . $line['id']);
+        } else {
+            pg_query($db, "UPDATE inc_idea SET status = 5 WHERE id = " . $line['id']);
+        }
+    }
+
+    $result_end_vote_time = pg_query($db, "SELECT * FROM public.inc_idea WHERE status = 4 or status = 5");
     ?>
     <div class="container">
         <div class="container mt-4">
@@ -130,22 +158,26 @@
                         break;
                     case 4:
                         $idea_status = 'Принята на голосовании';
-                        $idea_status_color = 'info';
+                        $idea_status_color = 'success';
                         break;
                     case 5:
                         $idea_status = 'Отклонена пользователями';
                         $idea_status_color = 'danger';
                         break;
                     case 6:
-                        $idea_status = 'Голосование';
+                        $idea_status = 'Выполняется';
                         $idea_status_color = 'info';
                         break;
                     case 7:
                         $idea_status = 'Выполнена';
                         $idea_status_color = 'success';
                         break;
-                    case 8:
+                    case 9:
                         $idea_status = 'Не прошла модерацию';
+                        $idea_status_color = 'danger';
+                        break;
+                    case 8:
+                        $idea_status = 'Не пвыполнена';
                         $idea_status_color = 'danger';
                         break;
                 }
@@ -171,6 +203,14 @@
                                         <p class="text-<?= $idea_status_color ?>"> <?= $idea_status ?></p>
                                     </div>
 
+                                </div>
+                                <div class="row justify-content-between">
+                                    <div class="col-auto">
+                                        <form id="id" action="showIdeaForAdminScript.php" enctype="multipart/form-data" name="postId" method="POST">
+                                            <input type="hidden" value="<?= $line['id'] ?>" name="postId">
+                                            <input type="submit" class="btn btn-primary rounded-pill w-100" value="Обзор">
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -241,32 +281,14 @@
                 }
 
                 switch ($line['status']) {
-                    case 0:
-                        $idea_status = 'Готовится';
-                        break;
-                    case 1:
-                        $idea_status = 'Модериются';
-                        break;
-                    case 2:
-                        $idea_status = 'Опубликована';
-                        break;
-                    case 3:
-                        $idea_status = 'Голосование';
-                        break;
+
                     case 4:
                         $idea_status = 'Принята на голосовании';
+                        $idea_status_color = 'success';
                         break;
                     case 5:
                         $idea_status = 'Отклонена пользователями';
-                        break;
-                    case 6:
-                        $idea_status = 'Голосование';
-                        break;
-                    case 7:
-                        $idea_status = 'Выполнена';
-                        break;
-                    case 8:
-                        $idea_status = 'Не прошла модерацию';
+                        $idea_status_color = 'danger';
                         break;
                 }
 
@@ -289,13 +311,13 @@
                                 <div class="row justify-content-between">
                                     <div class="col-auto">
 
-                                        <p class="text-info"> <?= $idea_status ?></p>
+                                        <p class="text-<?= $idea_status_color ?>"> <?= $idea_status ?></p>
 
                                     </div>
                                 </div>
                                 <div class="row justify-content-between">
                                     <div class="col-auto">
-                                        <form id="id" action="showIdeaForAdminScriptEndVoteTime.php" enctype="multipart/form-data" name="postId" method="POST">
+                                        <form id="id" action="showIdeaForAdminScript.php" enctype="multipart/form-data" name="postId" method="POST">
                                             <input type="hidden" value="<?= $line['id'] ?>" name="postId">
                                             <input type="submit" class="btn btn-primary rounded-pill w-100" value="Обзор">
                                         </form>
@@ -323,32 +345,15 @@
                 }
 
                 switch ($line['status']) {
-                    case 0:
-                        $idea_status = 'Готовится';
-                        break;
-                    case 1:
-                        $idea_status = 'Модериются';
-                        break;
-                    case 2:
-                        $idea_status = 'Опубликована';
-                        break;
-                    case 3:
-                        $idea_status = 'Голосование';
-                        break;
-                    case 4:
-                        $idea_status = 'Принята на голосовании';
-                        break;
-                    case 5:
-                        $idea_status = 'Отклонена пользователями';
-                        break;
+
                     case 6:
-                        $idea_status = 'Голосование';
+                        $idea_status = 'Выполняется';
                         break;
                     case 7:
                         $idea_status = 'Выполнена';
                         break;
                     case 8:
-                        $idea_status = 'Не прошла модерацию';
+                        $idea_status = 'Не выполнена';
                         break;
                 }
 
@@ -372,7 +377,14 @@
                                     <div class="col-auto">
                                         <p class="text-success"> <?= $idea_status ?></p>
                                     </div>
-
+                                    <div class="row justify-content-between">
+                                        <div class="col-auto">
+                                            <form id="id" action="showIdeaForAdminScript.php" enctype="multipart/form-data" name="postId" method="POST">
+                                                <input type="hidden" value="<?= $line['id'] ?>" name="postId">
+                                                <input type="submit" class="btn btn-primary rounded-pill w-100" value="Обзор">
+                                            </form>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

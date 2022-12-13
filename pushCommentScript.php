@@ -17,10 +17,10 @@ $postId = $_POST['idPost'];
 $postTime = date('d.m.Y H:i:s');
 $count = pg_fetch_row(pg_query($db, "SELECT count(*) FROM inc_comment"));
 session_start();
-$autherId = $_SESSION['hash'];
+$authorId = $_SESSION['hash'];
 
 
 
-$quary = "INSERT into inc_comment VALUES(" . $count[0] . "," . $postId . "," . $comId . "," . $autherId . ", '" . $descr . "','" . $postTime . "','" . $postTime . "');";
+$quary = "INSERT into inc_comment VALUES(" . $count[0] . "," . $postId . "," . $comId . "," . $authorId . ", '" . $descr . "','" . $postTime . "','" . $postTime . "');";
 $res = pg_query($db, (string) $quary);
-echo "INSERT into inc_comment VALUES(" . $count[0] . "," . $postId . "," . $comId . "," . $autherId . ", '" . $descr . "','" . $postTime . "','" . $postTime . "');";
+echo "INSERT into inc_comment VALUES(" . $count[0] . "," . $postId . "," . $comId . "," . $authorId . ", '" . $descr . "','" . $postTime . "','" . $postTime . "');";
