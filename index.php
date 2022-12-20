@@ -92,8 +92,11 @@
 
                 </div>
                 <div class="col-12 col-sm-12 col-md-12 col-lg-auto col-xl-auto mb-sm-2 mb-md-2 mb-lg-0">
-                    <a class="btn btn-primary rounded-pill w-100" href="addRequset.php">Добавить идею</a>
-
+                    <?php if ($_SESSION['login'] != '') { ?>
+                        <a class="btn btn-primary rounded-pill w-100" href="addRequset.php">Добавить идею</a>
+                    <?php } else { ?>
+                        <a class="btn btn-primary rounded-pill w-100" href="authSuggestion.php">Добавить идею</a>
+                    <?php } ?>
                 </div>
 
             </div>

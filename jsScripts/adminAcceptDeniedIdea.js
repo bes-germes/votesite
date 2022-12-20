@@ -13,21 +13,9 @@ function acceptIdea() {
 function fillInputByTag(idx, postID) {
 
     document.getElementById('create_new_tag').value = document.getElementById('existTag' + idx).innerText;
-    document.getElementById('taqQuestionBtn').value = 0;
+    document.getElementById('taqQuestionBtn').value = 1;
 
-    $.ajax({
-        type: "POST",
-        url: 'tagsAddScript.php',
-        data: {
-            tagValue: document.getElementById('create_new_tag').value,
-            postID: postID
-
-        },
-        success: function (data) {
-            console.log(data);
-
-        },
-    });
+   
 }
 
 function createNewTag() {
