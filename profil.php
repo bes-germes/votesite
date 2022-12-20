@@ -60,7 +60,7 @@
     $results_group_name = pg_query($db, 'SELECT * FROM public."group" WHERE id=' . $line_group['group_id']);
     $line_group_name = pg_fetch_assoc($results_group_name);
 
-    $result_all = pg_query($db, "SELECT * FROM inc_idea WHERE author=" . $_SESSION['hash'] . "");
+    $result_all = pg_query($db, "SELECT * FROM inc_idea WHERE author=" . $_SESSION['hash'] . " ORDER BY status");
 
 
     $result_denied = pg_query($db, "SELECT * FROM inc_idea WHERE author='" . $_SESSION['hash'] . "' and (status = 5 or status = 8)");
@@ -185,7 +185,7 @@
                             <div class="container">
                                 <div class="row">
                                     <div class="col-auto">
-                                        <p class="text-<?= $idea_status_color ?>"> <?= $idea_status ?><span class="badge badge-secondary" style="color: red;"><?= $new_req ?></span></p>
+                                        <p class="text-<?= $idea_status_color ?>"> <?= $idea_status ?></p>
                                     </div>
                                 </div>
                                 <div class="row justify-content-between">

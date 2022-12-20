@@ -59,13 +59,13 @@
 
     $result_all = pg_query($db, "SELECT * FROM inc_idea ");
 
-    $result_end_vote_time = pg_query($db, "SELECT * FROM public.inc_idea WHERE DATE_PART('day',  vote_finish - '" . date('d.m.Y') . "') <= 0 and status != 6;");
+    $result_end_vote_time = pg_query($db, "SELECT * FROM public.inc_idea WHERE DATE_PART('day',  vote_finish - '" . date('d.m.Y') . "') <= 0");
 
     $result_end_freetry_time = pg_query($db, "SELECT * FROM public.inc_idea WHERE DATE_PART('day', freetry_finish -'" . date('d.m.Y') . "') <= 0;");
 
     $result_check = pg_query($db, "SELECT * FROM inc_idea WHERE status = 1");
 
-    $result_banned = pg_query($db, "SELECT * FROM inc_idea  WHERE status = 8");
+    $result_banned = pg_query($db, "SELECT * FROM inc_idea  WHERE status = 9");
 
 
 
@@ -86,14 +86,16 @@
             }
         }
 
-        if ($likes > $dislikes) {
-            pg_query($db, "UPDATE inc_idea SET status = 4 WHERE id = " . $line['id']);
-        } else {
-            pg_query($db, "UPDATE inc_idea SET status = 5 WHERE id = " . $line['id']);
+        if ($line['status'] != 6 && $line['status'] != 7 && $line['status'] != 8) {
+            if ($likes > $dislikes) {
+                pg_query($db, "UPDATE inc_idea SET status = 4 WHERE id = " . $line['id']);
+            } else {
+                pg_query($db, "UPDATE inc_idea SET status = 5 WHERE id = " . $line['id']);
+            }
         }
     }
 
-    $result_end_vote_time = pg_query($db, "SELECT * FROM public.inc_idea WHERE status = 4 or status = 5");
+    $result_end_vote_time = pg_query($db, "SELECT * FROM public.inc_idea WHERE status = 4 or status = 5 or status = 6 or status = 7 or status = 8");
     ?>
     <div class="container">
         <div class="container mt-4">
@@ -290,6 +292,18 @@
                         $idea_status = 'Отклонена пользователями';
                         $idea_status_color = 'danger';
                         break;
+                    case 6:
+                        $idea_status = 'Выполняется';
+                        $idea_status_color = 'info';
+                        break;
+                    case 7:
+                        $idea_status = 'Выполнена';
+                        $idea_status_color = 'success';
+                        break;
+                    case 8:
+                        $idea_status = 'Не выполнена';
+                        $idea_status_color = 'danger';
+                        break;
                 }
 
             ?>
@@ -348,12 +362,15 @@
 
                     case 6:
                         $idea_status = 'Выполняется';
+                        $idea_status_color = 'info';
                         break;
                     case 7:
                         $idea_status = 'Выполнена';
+                        $idea_status_color = 'success';
                         break;
                     case 8:
                         $idea_status = 'Не выполнена';
+                        $idea_status_color = 'danger';
                         break;
                 }
 
@@ -375,7 +392,7 @@
                             <div class="container">
                                 <div class="row justify-content-between">
                                     <div class="col-auto">
-                                        <p class="text-success"> <?= $idea_status ?></p>
+                                        <p class="text-<?= $idea_status_color ?>"> <?= $idea_status ?></p>
                                     </div>
                                     <div class="row justify-content-between">
                                         <div class="col-auto">

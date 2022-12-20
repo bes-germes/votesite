@@ -53,7 +53,7 @@
                             <?php } ?>
                         </div>
 
-                        <input type="submit" class="btn btn-primary rounded-pill w-100" value="Выйти">
+                        <input type="submit" class="btn btn-primary rounded-pill w-100" style="margin-top: 5px;" value="Выйти">
                     </form>
                 <?php } else { ?>
                     <form id="checkInOut" action="login.php" enctype="multipart/form-data" method="POST">
@@ -139,6 +139,8 @@
                     <?php
                     while ($line = pg_fetch_array($result, null, PGSQL_ASSOC)) {
 
+                        $query_tags = 'SELECT *FROM public.inc_idea_tag WHERE  idea_id =' . $line['id'];
+
                         $query_likes = 'SELECT * FROM inc_idea_vote WHERE inc_idea_vote.user_id=' . $_SESSION['hash'] . ' and inc_idea_vote.idea_id=' . $line['id'];
 
                         $likes = 0;
@@ -157,11 +159,14 @@
                             }
                         }
 
-                        $result_end_vote_time = pg_send_query($db, "SELECT * FROM public.inc_idea WHERE DATE_PART('day', vote_finish - '" . date('d.m.Y') . "') >= 0 and DATE_PART('day', vote_start - '" . date('d.m.Y') . "') <= 0 and id = " . $line['id'] . ";");
+                        $result_end_vote_time = pg_send_query($db, "SELECT * FROM public.inc_idea WHERE DATE_PART('day', vote_finish - '" . date('d.m.Y') . "') > 0 and DATE_PART('day', vote_start - '" . date('d.m.Y') . "') <= 0 and id = " . $line['id'] . ";");
                         $res_end_time_vote = pg_get_result($db);
                         $rows_end_time_vote = pg_num_rows($res_end_time_vote);
                         $result_likes = pg_query($query_likes) or die('Ошибка запроса: ' . pg_last_error());
                         $likes_line = pg_fetch_array($result_likes, null, PGSQL_ASSOC);
+
+                        $tag_result = pg_query($query_tags) or die('Ошибка запроса: ' . pg_last_error());
+                        $tag_line = pg_fetch_assoc($tag_result);
 
                         if ($likes_line == false) {
                             $put_like = 'outline-';
@@ -193,13 +198,70 @@
                         } else {
                             $link_image = $line['image'];
                         }
+
+
+                        switch ($line['status']) {
+                            case 0:
+                                $idea_status = 'Готовится';
+                                $idea_status_color = 'primary';
+                                break;
+                            case 1:
+                                $idea_status = 'Модериются';
+                                $idea_status_color = 'primary';
+                                break;
+                            case 2:
+                                $idea_status = 'Опубликована';
+                                $idea_status_color = 'success';
+                                break;
+                            case 3:
+                                if ($rows_end_time_vote > 0) {
+                                    $idea_status = 'Голосование';
+                                    $idea_status_color = 'primary';
+                                } else {
+                                    $idea_status = 'Голосование окончено';
+                                    $idea_status_color = 'warning';
+                                }
+                                break;
+                            case 4:
+                                $idea_status = 'Принята на голосовании';
+                                $idea_status_color = 'success';
+                                break;
+                            case 5:
+                                $idea_status = 'Отклонена пользователями';
+                                $idea_status_color = 'danger';
+                                break;
+                            case 6:
+                                $idea_status = 'Выполняется';
+                                $idea_status_color = 'primary';
+                                break;
+                            case 7:
+                                $idea_status = 'Выполнена';
+                                $idea_status_color = 'success';
+                                break;
+                            case 9:
+                                $idea_status = 'Не прошла модерацию';
+                                $idea_status_color = 'danger';
+                                break;
+                            case 8:
+                                $idea_status = 'Не пвыполнена';
+                                $idea_status_color = 'danger';
+                                break;
+                        }
                     ?>
 
                         <div class="col-12 col-sm-12 col-md-12 col-lg-3 col-xl-3 mb-sm-2 mb-md-2 mb-lg-0">
-                            <div class="card" style="margin-bottom: 15px;">
+                            <div class="card " style="margin-bottom: 15px;">
                                 <div style="width: 100%;height: 40vh;object-fit: cover;">
                                     <img class="card-img-top" style="width: 100%;height: 40vh;object-fit: cover;" src="<?= $link_image ?>" alt="Card image cap">
 
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-auto">
+                                            <p class="text-<?= $idea_status_color ?>"> <?= $idea_status ?> <span class="badge bg-<?= $idea_status_color ?>"><?= $tag_line['tag'] ?></span></p>
+                                        </div>
+
+                                    </div>
                                 </div>
 
                                 <div class="card-body" style="width: 100%; height: 150px; max-height: 300px">

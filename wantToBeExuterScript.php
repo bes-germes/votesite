@@ -10,7 +10,7 @@ if (isset($_POST['postId'])) {
             pg_query($db, "UPDATE public.inc_executors SET role=" . $arr['role'] . ", role_date='" . date('d.m.Y H:i:s') . "' WHERE user_id = " . $arr['hash']);
         }
 
-        pg_query($db,"UPDATE public.inc_idea SET status = 6, freetry_start = '" . date('d.m.Y H:i:s', strtotime($_POST['freetry_start'])) . "',freetry_finish = '" . date('d.m.Y H:i:s', strtotime($_POST['freetry_finish'])) .  "' WHERE id = " . $_POST['postId']);
+        pg_query($db, "UPDATE public.inc_idea SET status = 6, freetry_start = '" . date('d.m.Y H:i:s', strtotime($_POST['freetry_start'])) . "',freetry_finish = '" . date('d.m.Y H:i:s', strtotime($_POST['freetry_finish'])) .  "' WHERE id = " . $_POST['postId']);
         return;
     }
 

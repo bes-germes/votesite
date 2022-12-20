@@ -18,8 +18,12 @@ if (isset($_POST['postId'])) {
         <meta charset="UTF-8">
         <script src="http://code.jquery.com/jquery-2.0.2.min.js"></script>
         <script type="text/javascript" src="jquery.js"></script>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+        <!-- подключаем библиотеку -->
+        <script type="text/javascript" src="https://unpkg.com/popper.js"></script>
+        <!-- подключаем универсальный скрипт, который использует API propper.js для упрощенного использование подсказок -->
+        <script type="text/javascript" src="https://unpkg.com/tooltip.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
         <script src="http://localhost/votesite/jsScripts/wantToBeExuterShowSucces.js"></script>
         <script src="http://localhost/votesite/jsScripts/adminAcceptDeniedIdea.js"></script>
         <link rel="stylesheet" href="assets/css/style.css">
@@ -125,7 +129,19 @@ if (isset($_POST['postId'])) {
                 </div>
             </div>
         </div>
-        <?php if ($line['status'] == 1) { ?>
+        <?php if ($line['status'] == 1) {
+
+
+
+            $tags_array = array();
+            $result_tag = pg_query('SELECT tag FROM public.inc_idea_tag;');
+            while ($line_tag = pg_fetch_assoc($result_tag)) {
+                array_push($tags_array, $line_tag['tag']);
+            }
+
+            $distinct = array_unique($tags_array);
+
+        ?>
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-auto">
@@ -137,7 +153,36 @@ if (isset($_POST['postId'])) {
 
                     </div>
                 </div>
+
                 <div class="row justify-content-center d-none" id="acceptIdea" style="margin-top: 2rem;">
+
+                    <div class="row justify-content-center">
+                        <div class="input-group mb-3" style="width: 300px;">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Теги</button>
+                            <ul class="dropdown-menu">
+                                <?php
+                                $tag_id = 0;
+                                foreach ($distinct as $oldTag) {
+                                ?>
+                                    <li><a class="dropdown-item" id="existTag<?= $tag_id ?>" onclick="fillInputByTag(<?= $tag_id++ ?>, <?= $_POST['postId'] ?>)" href="#"><?= $oldTag ?></a></li>
+
+                                <?php
+                                } ?>
+                            </ul>
+                            <input type="text" placeholder="Создать новый" id="create_new_tag" class="form-control" aria-label="Text input with dropdown button">
+                        </div>
+                        <div class="col-auto d-none" id="tagQuetion">
+
+                            <button type="button" class="btn btn-primary mb-3" value="0" id="taqQuestionBtn" onclick="createNewTag()">Добавить новый тег?</button>
+                        </div>
+                        <div id="denyTag" class="d-none" style="color: red;">
+                            Тег убран
+                        </div>
+                        <div id="acceptTag" class="d-none" style="color: green;">
+                            Новый тег добавлен
+                        </div>
+                    </div>
+
 
                     <div class="col-auto">
                         <label for="staticEmail" class="form-control-plaintext">Дата начала голосования</label>
@@ -250,7 +295,7 @@ if (isset($_POST['postId'])) {
                     </div>
                     <div class="row justify-content-center" id="acceptIdea" style="margin-top: 1rem;">
                         <div class="col-auto">
-                            <button type="button" class="btn btn-primary mb-3" onclick="addExecuters(<?= $_POST['postId'] ?>, 3)">Опубликовать</button>
+                            <button type="button" class="btn btn-primary mb-3" onclick="addExecuters(<?= $_POST['postId'] ?>)">Опубликовать</button>
                         </div>
                     </div>
                 </div>
@@ -286,8 +331,89 @@ if (isset($_POST['postId'])) {
             </div>
         <?php }
         if ($line['status'] == 6) {
-        ?>
 
+            $idea_date_start_freetry = date('Y.m.d', strtotime($line['freetry_start']));
+            $idea_date_finish_freetry = date('Y.m.d', strtotime($line['freetry_finish']));
+            $idea_date_start_vote = date('Y.m.d', strtotime($line['vote_start']));
+            $body_date_finish_vote = date('Y.m.d', strtotime($line['vote_finish']));
+            $body_date_start_freetry = str_replace('.', "-", $idea_date_start_freetry);
+            $body_date_finish_freetry = str_replace('.', "-", $idea_date_finish_freetry);
+            $body_date_start_vote = str_replace('.', "-", $idea_date_start_vote);
+            $body_date_finish_vote = str_replace('.', "-", $body_date_finish_vote);
+        ?>
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-auto">
+                        <p> Исполняется идея </p>
+                        <p> Осталось: <?= round((strtotime($line['freetry_finish']) - strtotime(date('d.m.Y H:i:s'))) / 86400) ?> дней для исполнения</p>
+                    </div>
+
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-auto">
+                        <h5> Дата начала и конца голосования</h5>
+                    </div>
+
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-auto">
+                        <input type="date" class="form-control" value="<?= $body_date_start_vote ?>" id="start_vote_field" name="trip-start" disabled>
+                    </div>
+
+                    <div class='col-auto'>
+                        <input type="date" class="form-control" value="<?= $body_date_finish_vote ?>" id="end_vote_field" name="trip-start" disabled>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-auto">
+                        <h5> Дата начала и конца исполнения</h5>
+                    </div>
+
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-auto">
+                        <input type="date" class="form-control" value="<?= $body_date_start_freetry ?>" id="start_freetry_field" name="trip-start" disabled>
+                    </div>
+
+                    <div class='col-auto'>
+                        <input type="date" class="form-control" value="<?= $body_date_finish_freetry ?>" id="end_freetry_field" name="trip-start" disabled>
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-auto">
+
+                    </div>
+                </div>
+                <div class="row justify-content-center" style="margin-top: 1rem;">
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-success" onclick="updateIdea(<?= $_POST['postId'] ?>, 7)">Выполнена</button>
+                    </div>
+                    <div class="col-auto">
+
+                        <button type="button" class="btn btn-primary mb-3" onclick="updateIdea(<?= $_POST['postId'] ?>, 8)">Не выполнена</button>
+
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-auto">
+                        <div id="denyErr" class="d-none" style="color: red;">
+                            Заявка отклонена
+                        </div>
+                        <div id="acceptErr" class="d-none" style="color: green;">
+                            Заявка принята
+                        </div>
+                        <div id="timeErr" class="d-none" style="color: red;">
+                            Неправильно поставлен срок голосования
+                        </div>
+                        <div id="create_new_tag" class="d-none" style="color: green;">
+                            Заявка принята
+                        </div>
+                        <div id="tagQuetion" class="d-none" style="color: red;">
+                            Неправильно поставлен срок голосования
+                        </div>
+                    </div>
+                </div>
+            </div>
     <?php }
     }
     ?>

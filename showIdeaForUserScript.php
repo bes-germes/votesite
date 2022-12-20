@@ -44,8 +44,8 @@ if (isset($_POST['postId'])) {
         <section class="text-center container">
             <div class="row py-lg-5">
                 <div class="col-lg-6 col-md-8 mx-auto">
-                    <h1 class="fw-light">Admin кабинет</h1>
-                    <h4>Здесь вы можете делать что захотите</h5>
+                    <h1 class="fw-light">Личный кабинет</h1>
+                    <h4>Здесь вы можете посмотреть статус своих идей</h5>
                 </div>
             </div>
         </section>
@@ -116,13 +116,19 @@ if (isset($_POST['postId'])) {
                         </div>
                     </div>
 
-                    <div class="row justify-content-center">
-                        <div class="col-auto">
-                            Откликнулись на идею
-                        </div>
-                    </div>
-                    <?php $result_executers = pg_query($db, "SELECT * FROM public.inc_executors WHERE user_id != " . $_SESSION['hash'] . " and idea_id =" . $_POST['postId']);
 
+                    <?php $result_executers = pg_query($db, "SELECT * FROM public.inc_executors WHERE user_id != " . $_SESSION['hash'] . " and idea_id =" . $_POST['postId']);
+                    $result_bool = pg_query($db, "SELECT * FROM public.inc_executors WHERE user_id != " . $_SESSION['hash'] . " and idea_id =" . $_POST['postId']);
+                    $rs = pg_fetch_assoc($result_bool);
+
+                    if ($rs) {
+                    ?>
+                        <div class="row justify-content-center">
+                            <div class="col-auto">
+                                Откликнулись на заявку
+                            </div>
+                        <?php
+                    }
 
                     while ($line_executers = pg_fetch_array($result_executers, null, PGSQL_ASSOC)) {
                         $result_user = pg_query($db, "SELECT * FROM public.student WHERE id = " . $line_executers['user_id']);
@@ -134,15 +140,15 @@ if (isset($_POST['postId'])) {
                         $results_group_name = pg_query($db, 'SELECT * FROM public."group" WHERE id=' . $line_group['group_id']);
                         $line_group_name = pg_fetch_assoc($results_group_name);
 
-                    ?>
-                        <li class="list-group-item"><?= $line_user['first_name'] ?> <?= $line_user['middle_name'] ?> <?= $line_user['last_name'] ?> <strong> Группа: <?= $line_group_name['name']  ?></strong>
-                        </li>
-                    <?php }
-                    ?>
+                        ?>
+                            <li class="list-group-item"><?= $line_user['first_name'] ?> <?= $line_user['middle_name'] ?> <?= $line_user['last_name'] ?> <strong> Группа: <?= $line_group_name['name']  ?></strong>
+                            </li>
+                        <?php }
+                        ?>
 
+                        </div>
                 </div>
             </div>
-        </div>
-    <?php
-}
-    ?>
+        <?php
+    }
+        ?>
