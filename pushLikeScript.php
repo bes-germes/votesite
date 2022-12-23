@@ -5,18 +5,18 @@ $count = pg_fetch_row(pg_query($db, "SELECT count(*) FROM inc_idea_vote"));
 
 session_start();
 
-$quary = "SELECT * FROM inc_idea_vote WHERE idea_id =" . $_POST['postId'] . " and user_id =" . $_SESSION['userId'] . ";";
+$quary = "SELECT * FROM inc_idea_vote WHERE idea_id =" . $_POST['postId'] . " and user_id =" . $_SESSION['hash'] . ";";
 echo $quary;
 
 $result = pg_query($db, (string) $quary);
 $line = pg_fetch_assoc($result);
 
 if (!is_array($line)) {
-   $quary = "INSERT INTO inc_idea_vote VALUES(" . $_POST['postId'] . "," . $_SESSION['userId'] . "," . $_POST['likeBool'] . "," . $count[0] . ")";
+   $quary = "INSERT INTO inc_idea_vote VALUES(" . $_POST['postId'] . "," . $_SESSION['hash'] . "," . $_POST['likeBool'] . "," . $count[0] . ")";
    echo $quary;
    pg_query($db, (string) $quary);
 } else {
-   $quary = "UPDATE inc_idea_vote SET value = " . $_POST['likeBool'] . " WHERE idea_id = " . $_POST['postId'] . " and user_id =" . $_SESSION['userId'] . ";";
+   $quary = "UPDATE inc_idea_vote SET value = " . $_POST['likeBool'] . " WHERE idea_id = " . $_POST['postId'] . " and user_id =" . $_SESSION['hash'] . ";";
    echo $quary;
    pg_query($db, (string) $quary);
 }
