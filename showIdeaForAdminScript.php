@@ -72,7 +72,7 @@ if (isset($_POST['postId'])) {
         $result = pg_query($db, "SELECT * FROM inc_idea WHERE id = " . $_POST['postId']);
         $line = pg_fetch_assoc($result);
 
-        $result_executers = pg_query($db, "SELECT * FROM public.inc_executors WHERE idea_id =" . $_POST['postId']);
+        $result_executers = pg_query($db, "SELECT * FROM public.inc_executors WHERE idea_id =" . $_POST['postId'] . "and role = 3;");
 
         $likes = 0;
         $dislikes = 0;
@@ -149,7 +149,7 @@ if (isset($_POST['postId'])) {
                     </div>
                     <div class="col-auto">
 
-                        <button type="button" class="btn btn-primary mb-3" onclick="updateIdea(<?= $_POST['postId'] ?>, 8)">Отклонить</button>
+                        <button type="button" class="btn btn-primary mb-3" onclick="updateIdea(<?= $_POST['postId'] ?>, 9)">Отклонить</button>
 
                     </div>
                 </div>
@@ -212,6 +212,13 @@ if (isset($_POST['postId'])) {
                         <div id="timeErr" class="d-none" style="color: red;">
                             Неправильно поставлен срок голосования
                         </div>
+                        <div id="tagErr" class="d-none" style="color: red;">
+                            Вы не добавлили новый тег
+                        </div>
+                        <div id="tagErrEmpty" class="d-none" style="color: red;">
+                            Поле с тегом содержит пробел или оно пустое или тег слишком длинный
+                        </div>
+                        <input id="tagInput" type="hidden" value="0">
                     </div>
                 </div>
             </div>
@@ -248,8 +255,9 @@ if (isset($_POST['postId'])) {
 
                 </div>
                 <div class="row justify-content-center" style="margin-top: 1rem;">
-                    <div class="col-auto">
-                        <ul class="list-group">
+                    <div class="col-4">
+                        <h6>Список желающих</h6>
+                        <ul class="list-group" id="student_list">
                             <?php
                             $cur_id = 0;
 
@@ -266,16 +274,23 @@ if (isset($_POST['postId'])) {
                                 }
 
                             ?>
-                                <li class="list-group-item<?= $is_leader ?>"><?= $line_user['first_name'] ?> <?= $line_user['middle_name'] ?> <?= $line_user['last_name'] ?> <?= $is_leader_status ?>
-                                    <div class="form-check form-switch">
+                                <li id="exuters_list<?= $cur_id ?>" class="list-group-item<?= $is_leader ?>"><?= $line_user['first_name'] ?> <?= $line_user['middle_name'] ?> <?= $line_user['last_name'] ?> <?= $is_leader_status ?>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-check form-switch">
 
-                                        <input class="form-check-input" type="checkbox" name="form-check-input" value="<?= $line_executers['user_id'] ?>" id="flexSwitchCheckDefault">
-                                        <label class="form-check-label" for="flexSwitchCheckDefault">В команду</label>
-                                    </div>
-                                    <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" name="form-check-input" value="<?= $line_executers['user_id'] ?>" id="flexSwitchCheckDefault">
+                                                <label class="form-check-label" for="flexSwitchCheckDefault">В команду</label>
+                                            </div>
+                                            <div class="form-check form-switch">
 
-                                        <input class="form-check-input" type="checkbox" name="form-check-input-leader" value="<?= $line_executers['user_id'] ?>" id="flexSwitchCheckDefaultLeader<?= $cur_id ?>" onchange="addExecuterLeader(<?= $cur_id ?>)">
-                                        <label class="form-check-label" for="flexSwitchCheckDefaultLeader">Сделать лидером</label>
+                                                <input class="form-check-input" type="checkbox" name="form-check-input-leader" value="<?= $line_executers['user_id'] ?>" id="flexSwitchCheckDefaultLeader<?= $cur_id ?>" onchange="addExecuterLeader(<?= $cur_id ?>)">
+                                                <label class="form-check-label" for="flexSwitchCheckDefaultLeader">Сделать лидером</label>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <button type="button" class="btn btn-danger btn-sm" onclick="removeExecuter(<?= $cur_id ?>, <?= $line_executers['user_id'] ?>)">Удалить</button>
+                                        </div>
                                     </div>
                                 </li>
 
@@ -284,6 +299,28 @@ if (isset($_POST['postId'])) {
                             } ?>
 
                         </ul>
+                        <select class="form-select" aria-label="Default select example" onchange="findExecuterByGroup()">
+                            <option selected>Выберите группу</option>
+                            <?php $result_groups = pg_query($db, 'SELECT name, id FROM public."group";');
+                            while ($line_groups = pg_fetch_array($result_groups, null, PGSQL_ASSOC)) {
+
+                            ?>
+
+                                <option id="option_select<?= $line_groups['id'] ?>" value="<?= $line_groups['id'] ?>"><?= $line_groups['name'] ?></option>
+                            <?php } ?>
+                        </select>
+                        <div id="add_div_student" hidden style="margin-top: 1rem;">
+                            <div class="w-100">
+                                <h6>Добавить участника</h6>
+                                <ul class="list-group" id="student_add_list" style="overflow-y: scroll; max-height: 120px;">
+                                </ul>
+                            </div>
+                            <div class="row justify-content-center" style="margin-top: 1rem;">
+                                <div class="col-4">
+                                    <button type="button" class="btn btn-primary" onclick="addfoundedexecuterByGroup()">Добавить</button>
+                                </div>
+                            </div>
+                        </div>
                         <div class="row justify-content-center" style="margin-top: 1rem;">
                             <div class="col-auto">
                                 <div class="form-check form-switch">
@@ -296,6 +333,7 @@ if (isset($_POST['postId'])) {
                     <div class="row justify-content-center" id="acceptIdea" style="margin-top: 1rem;">
                         <div class="col-auto">
                             <button type="button" class="btn btn-primary mb-3" onclick="addExecuters(<?= $_POST['postId'] ?>)">Опубликовать</button>
+                            <input hidden id="post_id" value="<?= $_POST['postId'] ?>">
                         </div>
                     </div>
                 </div>
@@ -410,6 +448,9 @@ if (isset($_POST['postId'])) {
                         </div>
                         <div id="tagQuetion" class="d-none" style="color: red;">
                             Неправильно поставлен срок голосования
+                        </div>
+                        <div id="tagErrEmpty" class="d-none" style="color: red;">
+                            Поле с тегом содержит пробел или оно пустое или тег слишком длинный
                         </div>
                     </div>
                 </div>

@@ -19,8 +19,8 @@ if (isset($_POST['tagValue']) && isset($_POST['postID'])) {
     $line = pg_fetch_assoc($result);
 
     if (!is_array($line)) {
-        pg_query($db, "INSERT INTO public.inc_idea_tag( id, idea_id, tag) VALUES (" . $count[0] . ", " . $_POST['postID'] . ", '" . $_POST['tagValue'] . "');");
-        echo "INSERT INTO public.inc_idea_tag( id, idea_id, tag) VALUES (" . $count[0] . ", " . $_POST['postID'] . ", '" . $_POST['tagValue'] . "');";
+        pg_query($db, "INSERT INTO public.inc_idea_tag( idea_id, tag) VALUES (" . $_POST['postID'] . ", '" . $_POST['tagValue'] . "');");
+        echo "INSERT INTO public.inc_idea_tag( idea_id, tag) VALUES (" . $_POST['postID'] . ", '" . $_POST['tagValue'] . "');";
     } else {
         pg_query($db, "UPDATE public.inc_idea_tag SET tag = '" . $_POST['tagValue'] . "' WHERE idea_id =" . $_POST['postID'] . ";");
     }

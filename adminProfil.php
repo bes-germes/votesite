@@ -86,7 +86,7 @@
             }
         }
 
-        if ($line['status'] != 6 && $line['status'] != 7 && $line['status'] != 8) {
+        if ($line['status'] != 6 && $line['status'] != 7 && $line['status'] != 9) {
             if ($likes > $dislikes) {
                 pg_query($db, "UPDATE inc_idea SET status = 4 WHERE id = " . $line['id']);
             } else {

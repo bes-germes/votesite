@@ -25,6 +25,6 @@ if (isset($_POST['postId'])) {
         $user = $_SESSION['hash'];
         $postTime = date('d.m.Y H:i:s');
         $count = pg_fetch_row(pg_query($db, "SELECT count(*) FROM public.inc_executors"));
-        pg_query($db, "INSERT INTO public.inc_executors(id, idea_id, user_id, role, role_date)VALUES (" . $count[0] . ", " . $_POST['postId'] . ", " . $user . ", 0, '" . $postTime . "');");
+        pg_query($db, "INSERT INTO public.inc_executors(id, idea_id, user_id, role, role_date)VALUES (" . $_POST['postId'] . ", " . $user . ", 3, '" . $postTime . "');");
     }
 }

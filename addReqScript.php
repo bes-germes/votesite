@@ -142,7 +142,7 @@ if (isset($_POST['title_req']) && isset($_POST['text_req'])) {
     
     $count = pg_fetch_row(pg_query($db, "SELECT count(*) FROM public.inc_executors"));
 
-    pg_query($db, "INSERT INTO public.inc_executors(id, idea_id, user_id, role, role_date)VALUES (" . $count[0] . ", " . $postId[0] . ", " . $_SESSION['hash'] . ", 0, '" . $postTime . "');");
+    pg_query($db, "INSERT INTO public.inc_executors(id, idea_id, user_id, role, role_date)VALUES (" . $count[0] . ", " . $postId[0] . ", " . $_SESSION['hash'] . ", 3, '" . $postTime . "');");
 
     //header('Location:index.php');
 }

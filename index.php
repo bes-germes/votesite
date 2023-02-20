@@ -162,7 +162,12 @@
                             }
                         }
 
-                        $result_end_vote_time = pg_send_query($db, "SELECT * FROM public.inc_idea WHERE DATE_PART('day', vote_finish - '" . date('d.m.Y') . "') > 0 and DATE_PART('day', vote_start - '" . date('d.m.Y') . "') <= 0 and id = " . $line['id'] . ";");
+                        pg_send_query($db, "SELECT * FROM public.inc_idea WHERE DATE_PART('day', vote_start - '" . date('d.m.Y') . "') > 0 and id = " . $line['id'] . ";");
+                        $res_vote_time_left_to_begin = pg_get_result($db);
+                        $rows_vote_time_left_to_begin = pg_num_rows($res_vote_time_left_to_begin);
+                        $vote_time_left_to_begin_line = pg_fetch_array($res_vote_time_left_to_begin, null, PGSQL_ASSOC);
+                        pg_send_query($db, "SELECT * FROM public.inc_idea WHERE DATE_PART('day', vote_finish - '" . date('d.m.Y') . "') > 0 and DATE_PART('day', vote_start - '" . date('d.m.Y') . "') <= 0 and id = " . $line['id'] . ";");
+
                         $res_end_time_vote = pg_get_result($db);
                         $rows_end_time_vote = pg_num_rows($res_end_time_vote);
                         $result_likes = pg_query($query_likes) or die('Ошибка запроса: ' . pg_last_error());
@@ -217,12 +222,17 @@
                                 $idea_status_color = 'success';
                                 break;
                             case 3:
-                                if ($rows_end_time_vote > 0) {
-                                    $idea_status = 'Голосование';
+                                if ($rows_vote_time_left_to_begin > 0) {
+                                    $idea_status = 'Начнётся: ' . mb_substr($vote_time_left_to_begin_line['vote_start'], 0, 10);
                                     $idea_status_color = 'primary';
                                 } else {
-                                    $idea_status = 'Голосование окончено';
-                                    $idea_status_color = 'warning';
+                                    if ($rows_end_time_vote > 0) {
+                                        $idea_status = 'Голосование';
+                                        $idea_status_color = 'primary';
+                                    } else {
+                                        $idea_status = 'Голосование окончено';
+                                        $idea_status_color = 'warning';
+                                    }
                                 }
                                 break;
                             case 4:
@@ -230,7 +240,7 @@
                                 $idea_status_color = 'success';
                                 break;
                             case 5:
-                                $idea_status = 'Отклонена пользователями';
+                                $idea_status = 'Отклонена голосованием';
                                 $idea_status_color = 'danger';
                                 break;
                             case 6:
@@ -261,7 +271,13 @@
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-auto">
-                                            <p class="text-<?= $idea_status_color ?>"> <?= $idea_status ?> <span class="badge bg-<?= $idea_status_color ?>"><?= $tag_line['tag'] ?></span></p>
+                                            <p class="text-<?= $idea_status_color ?>"> <?= $idea_status ?>
+                                        </div>
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-auto">
+                                            <span class="badge bg-<?= $idea_status_color ?>" title="<?= $tag_line['tag'] ?>"><?= mb_strimwidth($tag_line['tag'], 0, 20, "...") ?></span></p>
                                         </div>
 
                                     </div>
@@ -332,11 +348,14 @@
                                         <div class="commnet_container" id="commnet_container<?= $curId ?>">
                                             <?php $query_comments = 'SELECT * FROM inc_comment WHERE idea_id=' . $line['id'] . 'and comment_id = -1';
                                             $result_comments = pg_query($query_comments) or die('Ошибка запроса: ' . pg_last_error());
+
                                             while ($comment = pg_fetch_array($result_comments, null, PGSQL_ASSOC)) {
+                                                $result_author = pg_query('SELECT * FROM student WHERE id=' . $comment['author_id']) or die('Ошибка запроса: ' . pg_last_error());
+                                                $author = pg_fetch_array($result_author, null, PGSQL_ASSOC);
                                             ?>
                                                 <div class="comment_body" id="comment_body<?= $comment['id'] ?>">
                                                     <div class="comment_head">
-                                                        Author name
+                                                        <?= $author['middle_name'] . " " . $author['first_name'] ?>
                                                     </div>
                                                     <div class="comment_inner text-break">
                                                         <?= $comment['description'] ?>
@@ -345,6 +364,10 @@
                                                         <?=
                                                         date('d.m.Y H:i:s', strtotime($comment['created']));
                                                         ?>
+
+                                                        <?php if ($_SESSION['role'] == 1) { ?>
+                                                            <button type="button" id="delete_btn<?= $comment['id'] ?>" value="<?= $comment['id'] ?>" class="btn" style="max-width: 100px; color: black; background-color: white; font-size: 13px;" onclick="DBDeleteComment(<?= $comment['id'] ?>)">Удалить</button>
+                                                        <?php } ?>
                                                     </div>
 
                                                     <?php $count = pg_fetch_row(pg_query($db, "SELECT count(*) FROM inc_comment WHERE comment_id =" . $comment['id']));
@@ -356,7 +379,7 @@
                                                     <?php
                                                     } else {
                                                     ?>
-                                                        <button type="button" id="rpy_btn<?= $comment['id'] ?>" value="<?= $comment['id'] ?>" class="btn" style="max-width: 100px; color: black; background-color: white; font-size: 13px;" onclick="DBAnwerToComment(<?= $comment['id'] ?>, <?= $comment['idea_id'] ?>)">Ответить</button>
+                                                        <button type="button" id="rpy_btn<?= $comment['id'] ?>" value="<?= $comment['id'] ?>" class="btn" style="max-width: 100px; color: black; background-color: white; font-size: 13px;" onclick="DBAnwerToComment(<?= $comment['id'] ?>, <?= $comment['idea_id'] ?>, '<?= $author['middle_name'] . ' ' . $author['first_name'] ?>')">Ответить</button>
                                                     <?php
                                                     }
                                                     ?>
@@ -366,10 +389,17 @@
                                                         $result_comments_reply = pg_query($query_comments_reply) or die('Ошибка запроса: ' . pg_last_error());
                                                         while ($comment_reply = pg_fetch_array($result_comments_reply, null, PGSQL_ASSOC)) {
                                                             if ($comment_reply['comment_id'] == $comment['id']) {
+                                                                $result_author = pg_query('SELECT * FROM student WHERE id=' . $comment_reply['author_id']) or die('Ошибка запроса: ' . pg_last_error());
+                                                                $author = pg_fetch_array($result_author, null, PGSQL_ASSOC);
+
+                                                                $result_delete_comm = pg_query($db, "SELECT id FROM inc_comment WHERE description = '" . $comment_reply['description'] . "'");
+                                                                $delete_com_id = pg_fetch_array($result_delete_comm, null, PGSQL_ASSOC);
+
+
 
                                                         ?>
                                                                 <div class="comment_head">
-                                                                    Author name
+                                                                    <?= $author['middle_name'] . " " . $author['first_name'] ?>
                                                                 </div>
                                                                 <div class="comment_inner text-wrap">
                                                                     <?= $comment_reply['description'] ?>
@@ -378,14 +408,17 @@
                                                                     <?=
                                                                     date('d.m.Y H:i:s', strtotime($comment_reply['created']));
                                                                     ?>
-                                                                    <button type="button" id="answer_btn<?= $comment['id'] ?>" value="<?= $comment['id'] ?>" class="btn" style="max-width: 100px; color: black; background-color: white; font-size: 13px;" onclick="DBAnwerToComment(<?= $comment['id'] ?>, <?= $comment['idea_id'] ?>)">Ответить</button>
+                                                                    <button type="button" id="answer_btn<?= $comment['id'] ?>" value="<?= $comment['id'] ?>" class="btn" style="max-width: 100px; color: black; background-color: white; font-size: 13px;" onclick="DBAnwerToComment(<?= $comment['id'] ?>, <?= $comment['idea_id'] ?>, '<?= $author['middle_name'] . ' ' . $author['first_name'] ?>')">Ответить</button>
+                                                                    <?php if ($_SESSION['role'] == 1) { ?>
+                                                                        <button type="button" id="delete_btn<?= $comment['id'] ?>" value="<?= $comment['id'] ?>" class="btn" style="max-width: 100px; color: black; background-color: white; font-size: 13px;" onclick="DBDeleteComment(<?= $delete_com_id['id'] ?>)">Удалить</button>
+                                                                    <?php } ?>
                                                                 </div>
 
                                                         <?php
                                                             }
                                                         }
                                                         ?>
-                                                        <button type="button" id="rpy_btn<?= $comment['id'] ?>" value="<?= $comment['id'] ?>" class="btn" style="max-width: 100px; color: black; background-color: white; font-size: 13px;" onclick="DBAnwerToComment(<?= $comment['id'] ?>, <?= $comment['idea_id'] ?>)">Ответить</button>
+
                                                     </div>
                                                 </div>
 
@@ -407,8 +440,9 @@
                                                         <textarea class="form-control" id="commentInputArea<?= $curId ?>" type="text" placeholder="Оставить комментраий" name="comment_push_enter" required></textarea>
 
                                                         <div class="input-group-append" id="commentInputDiv<?= $curId ?>">
-
-                                                            <button type="button" id="commentInputBtn<?= $curId ?>" class="btn" style="" type="" onclick="DBAddComment(<?= $curId ?>)">
+                                                            <?php $result_author = pg_query('SELECT * FROM student WHERE id=' . $_SESSION['hash']) or die('Ошибка запроса: ' . pg_last_error());
+                                                            $author = pg_fetch_array($result_author, null, PGSQL_ASSOC); ?>
+                                                            <button type="button" id="commentInputBtn<?= $curId ?>" class="btn" style="" type="" onclick="DBAddComment(<?= $curId ?>, '<?= $author['middle_name'] . ' ' . $author['first_name'] ?>')">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-arrow-right-circle-fill" viewBox="0 0 16 16">
                                                                     <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zM4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z" />
                                                                 </svg>
@@ -418,16 +452,18 @@
 
 
                                                     </div>
-                                                    <div class="row" style="margin-top: 1rem;">
-                                                        <div class="col">
-                                                            <!-- <a type="button" href="wantToBeExuter.php" class="btn btn-outline-secondary btn-sm">Хочу стать исполнителем идеи!</a> -->
-                                                            <form id="checkInOut" action="wantToBeExuter.php" enctype="multipart/form-data" method="POST">
+                                                    <?php if ($line['status'] <= 3) { ?>
+                                                        <div class="row" style="margin-top: 1rem;">
+                                                            <div class="col">
+                                                                <!-- <a type="button" href="wantToBeExuter.php" class="btn btn-outline-secondary btn-sm">Хочу стать исполнителем идеи!</a> -->
+                                                                <form id="checkInOut" action="wantToBeExuter.php" enctype="multipart/form-data" method="POST">
 
-                                                                <input type="hidden" value="<?= $curId ?>" name="action">
-                                                                <input type="submit" class="btn btn-outline-secondary btn-sm" value="Хочу стать исполнителем идеи!">
-                                                            </form>
+                                                                    <input type="hidden" value="<?= $curId ?>" name="action">
+                                                                    <input type="submit" class="btn btn-outline-secondary btn-sm" value="Хочу стать исполнителем идеи!">
+                                                                </form>
+                                                            </div>
                                                         </div>
-                                                    </div>
+                                                    <?php } ?>
                                                 <?php } else { ?>
                                                     <div class="container">
                                                         <div class="row justify-content-center">
