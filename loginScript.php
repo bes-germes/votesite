@@ -10,6 +10,11 @@ $au = new auth_ssh();
 if (array_key_exists('action', $_POST)) {
     switch ($_POST['action']) {
         case 'login':
+
+            if (!isset($_POST['login']) || empty($_POST['login'])){
+                header('Location:login.php');
+                exit; 
+            }
             $loggedIn = $au->login($_POST['login'], "", "");
             if (!$loggedIn) {
                 header('Location:login.php');

@@ -121,7 +121,7 @@ function updateIdea(postID, status) {
 
         let tag_name = document.getElementById('create_new_tag').value;
 
-        if (String(tag_name).length > 24) {
+        if (String(tag_name).length > 24 || /\s|⠀/.test(tag_name[0])) {
             document.getElementById('tagErrEmpty').classList.remove('d-none');
             return 0;
         }

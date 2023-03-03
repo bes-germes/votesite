@@ -18,7 +18,7 @@ function DBAddComment(idx, author) {
             let ComIdx = data;
             var today = new Date();
             var now = today.toLocaleString();
-            $('#commnet_container' + idx).append(" <div class='comment_body' id='comment_body" + ComIdx + "'><div class='main_com' id='main_com" + ComIdx + "'><div class='comment_head'>" + author + "</div><div class='comment_inner'>" + comment + "</div><div class='comment_time'>" + now + "</div></div><button type='button' id='rpy_btn" + ComIdx + "' value='" + ComIdx + "' class='btn' style='max-width: 100px; color: black; background-color: white; font-size: 13px; ' onclick='DBAnwerToComment(" + ComIdx + ", " + idx + ", " + '"' + author + '"' + ")'>Ответить</button><div class='d-none' id='comment_reply" + ComIdx + "' style='flex-direction: column;display: flex;padding: 10px;margin-right: 65px;margin-left: 60px;'></div></div>");
+            $('#commnet_container' + idx).append(" <div class='comment_body' id='comment_body" + ComIdx + "'><div class='main_com' id='main_com" + ComIdx + "'><div class='comment_head'>" + author + "</div><div class='comment_inner text-break display: inline-block; width:100px; height:50px;'>" + comment + "</div><div class='comment_time'>" + now + "</div></div><button type='button' id='rpy_btn" + ComIdx + "' value='" + ComIdx + "' class='btn' style='max-width: 100px; color: black; background-color: white; font-size: 13px; ' onclick='DBAnwerToComment(" + ComIdx + ", " + idx + ", " + '"' + author + '"' + ")'>Ответить</button><div class='d-none' id='comment_reply" + ComIdx + "' style='flex-direction: column;display: flex;padding: 10px;margin-right: 65px;margin-left: 60px;'></div></div>");
 
         },
     });
@@ -63,7 +63,7 @@ function DBAddAnswerComment(idx, ComIdx, author) {
             console.log(data);
             var today = new Date();
             var now = today.toLocaleString();
-            $('#comment_reply' + ComIdx).append("<div class='comment_head'>Вы</div><div class='comment_inner'>" + comment + "</div ><div class='comment_time'>" + now + "<button type = 'button' id = 'answer_btn" + ComIdx + "' value = '" + ComIdx + "' class= 'btn' style = 'max-width: 100px; color: black; background-color: white; font-size: 13px;' onclick = 'DBAnwerToComment(" + ComIdx + ", " + idx + ", " + '"' + author + '"' + ")'> Ответить </button></div>");
+            $('#comment_reply' + ComIdx).append("<div class='comment_head'>Вы</div><div class='comment_inner text-break display: inline-block; width:100px; height:50px;'>" + comment + "</div ><div class='comment_time'>" + now + "<button type = 'button' id = 'answer_btn" + ComIdx + "' value = '" + ComIdx + "' class= 'btn' style = 'max-width: 100px; color: black; background-color: white; font-size: 13px;' onclick = 'DBAnwerToComment(" + ComIdx + ", " + idx + ", " + '"' + author + '"' + ")'> Ответить </button></div>");
 
             if (document.getElementById('comment_reply' + ComIdx).classList == 'd-none')
                 document.getElementById('comment_reply' + ComIdx).classList.remove('d-none');

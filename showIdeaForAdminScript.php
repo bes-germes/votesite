@@ -45,9 +45,6 @@ if (isset($_POST['postId'])) {
                     </svg> -->
                         <strong>Инкубатор идей</strong>
                     </a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
                 </div>
             </div>
         </header>
@@ -164,7 +161,7 @@ if (isset($_POST['postId'])) {
                                 $tag_id = 0;
                                 foreach ($distinct as $oldTag) {
                                 ?>
-                                    <li><a class="dropdown-item" id="existTag<?= $tag_id ?>" onclick="fillInputByTag(<?= $tag_id++ ?>, <?= $_POST['postId'] ?>)" href="#"><?= $oldTag ?></a></li>
+                                    <li><a class="dropdown-item" max_w id="existTag<?= $tag_id ?>" onclick="fillInputByTag(<?= $tag_id++ ?>, <?= $_POST['postId'] ?>)" href="#"><?= $oldTag ?></a></li>
 
                                 <?php
                                 } ?>

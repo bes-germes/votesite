@@ -27,9 +27,6 @@
                     </svg> -->
                     <strong>Инкубатор идей</strong>
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
             </div>
         </div>
     </header>
@@ -259,7 +256,7 @@
                                     <div class="col-auto">
                                         <form id="showReq" action="showIdeaForAdminScript.php" enctype="multipart/form-data" method="POST">
                                             <input type="hidden" value="<?= $line['id'] ?>" name="postId">
-                                            <button type="submit" id="show_btn" value="" class="btn" style="max-width: 100px; color: black; background-color: white; font-size: 13px;">Обзор</button>
+                                            <input type="submit" class="btn btn-primary rounded-pill w-100" value="Обзор">
                                         </form>
                                     </div>
                                 </div>

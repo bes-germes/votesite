@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="http://code.jquery.com/jquery-2.0.2.min.js"></script>
+    <script type="text/javascript" src="jquery.js"></script>
     <script src="http://localhost/votesite/jsScripts/DBaddReq.js"></script>
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,69 +26,86 @@
                     </svg> -->
                     <strong>Инкубатор идей</strong>
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
             </div>
         </div>
     </header>
 
-    <section class="text-center container">
-        <div class="row py-lg-5">
-            <div class="col-lg-6 col-md-8 mx-auto">
-                <h1 class="fw-light">Предложить идею</h1>
+    <div id='reqSuggest'>
+
+        <section class="text-center container">
+            <div class="row py-lg-5">
+                <div class="col-lg-6 col-md-8 mx-auto">
+                    <h1 class="fw-light">Предложить идею</h1>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
 
 
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col">
-                <form id="checkForm" action="addReqScript.php" enctype="multipart/form-data" method="POST">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col">
 
 
                     <div class="input-group mb-3">
                         <input type="text" class="form-control" placeholder="Заголовок" aria-label="Заголовок" maxlength="23 " name="title_req" id="title_req" aria-describedby="basic-addon1" required>
                     </div>
-                    <!-- <div>
-                        <input class="title_rq" type="text" placeholder="Заголовок" name="title_req">
-                    </div> -->
+
                     <div class="input-group mb-3">
                         <textarea name="text_req" class="form-control" placeholder="Предложить идею" aria-label="Предложить идею" id="text_req" style="resize: none; height: 50vh" required></textarea>
                     </div>
-                    <!-- <div>
-                        <textarea class="text_rq" type="text" placeholder="Описание" name="text_req"></textarea>
-                    </div> -->
+
                     <div class="w-100" id="w-100"></div>
                     <div id="titleErr" class="d-none" style="color: red;">
-                        Пожалуйста введите заголовок
+                        Неправильно введен заголовок
                     </div>
                     <div id="descrErr" class="d-none" style="color: red;">
-                        Пожалуйста введите описание идеи
+                        Неправильно введено описание
+                    </div>
+                    <div id="fileErr" class="d-none" style="color: red;">
+
                     </div>
 
                     <div class="container">
                         <div class="row">
                             <div class="input-group">
 
-                                <!-- <label style="border: 1px solid grey; border-radius: 6px 0px 0px 6px; cursor:pointer;" class="d-flex">
-                                    <div id="fileenter" class="color:grey;">Прикрепить файл</div>
-                                    <input type="file" name="file" class="d-none form-control">
 
-                                </label> -->
                                 <div class="mb-3 d-flex flex-column">
                                     <label for="formFile" class="form-label">Выберите изoбражение для идеи</label>
                                     <div class="mb-3" style="display:flex; justify-content: space-between;">
                                         <input class="form-control" type="file" name="file" id="formFile" accept=".jpg, .jpeg, .png" required>
-                                        <button class="btn btn-outline-secondary" id="submit-btn" type="submit" onclick="DBaddReq()">Отправить</button>
+                                        <button class="btn btn-outline-secondary" id="submit-btn" onclick="DBaddReq()">Отправить</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                </form>
+
+                    </div>
+                </div>
+
             </div>
+        </div>
+    </div>
+
+    <div hidden id="reqAnswer">
+        <section class="text-center container">
+            <div class="row py-lg-5">
+                <div class="col-lg-6 col-md-8 mx-auto">
+                    <h1 class="fw-light">Идея отправлена</h1>
+                </div>
+            </div>
+        </section>
+
+
+
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-auto">
+                    <a class="btn btn-primary" href="index.php" role="button">Супер!</a>
+                </div>
+            </div>
+
         </div>
 
     </div>

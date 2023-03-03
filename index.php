@@ -7,12 +7,14 @@
     <script type="text/javascript" src="jquery.js"></script>
     <meta charset="UTF-8">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script type="text/javascript" src="https://unpkg.com/popper.js"></script>
+    <!-- подключаем универсальный скрипт, который использует API propper.js для упрощенного использование подсказок -->
+    <script type="text/javascript" src="https://unpkg.com/tooltip.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
     <script src="http://localhost/votesite/jsScripts/DBAddComment.js"></script>
     <script src="http://localhost/votesite/jsScripts/DBAddLikeDislike.js"></script>
     <script src="http://localhost/votesite/jsScripts/DBShowReply.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,7 +49,14 @@
                         <input type="hidden" value="logout" name="action">
                         <div class="col-12 col-sm-12 col-md-12 col-lg-auto col-xl-auto mb-sm-2 mb-md-2 mb-lg-0">
                             <?php if ($_SESSION['role'] == 1) { ?>
-                                <a class="btn btn-primary rounded-pill w-100" href="adminProfil.php"><?= $_SESSION['login'] ?></a>
+
+                                <div class="dropdown">
+                                    <button class="btn btn-primary rounded-pill w-100 dropdown-toggle" id="dropdownMenuButton1" type="button" data-bs-toggle="dropdown" aria-expanded="false"><?= $_SESSION['login'] ?></button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                        <li><a class="dropdown-item" href="adminProfil.php">кабинет админа</a></li>
+                                        <li><a class="dropdown-item" href="profil.php">личный кабинет</a></li>
+                                    </ul>
+                                </div>
                             <?php } else { ?>
                                 <a class="btn btn-primary rounded-pill w-100" href="profil.php"><?= $_SESSION['login'] ?></a>
                             <?php } ?>
@@ -357,7 +366,7 @@
                                                     <div class="comment_head">
                                                         <?= $author['middle_name'] . " " . $author['first_name'] ?>
                                                     </div>
-                                                    <div class="comment_inner text-break">
+                                                    <div class="comment_inner text-break display: inline-block; width:100px; height:50px;">
                                                         <?= $comment['description'] ?>
                                                     </div>
                                                     <div class="comment_time">
@@ -435,9 +444,9 @@
 
                                                         <?php $curId = $line['id'];
                                                         ?>
-                                                        <textarea name="hide" style="display:none;" class="form-control" id="answerInputArea<?= $curId ?>" type="text" placeholder="Ответить на комментарий" required></textarea>
+                                                        <textarea name="hide" style="display:none;" class="form-control" id="answerInputArea<?= $curId ?>" maxlength="250" type="text" placeholder="Ответить на комментарий" required></textarea>
 
-                                                        <textarea class="form-control" id="commentInputArea<?= $curId ?>" type="text" placeholder="Оставить комментраий" name="comment_push_enter" required></textarea>
+                                                        <textarea class="form-control" id="commentInputArea<?= $curId ?>" maxlength="250" type="text" placeholder="Оставить комментраий" name="comment_push_enter" required></textarea>
 
                                                         <div class="input-group-append" id="commentInputDiv<?= $curId ?>">
                                                             <?php $result_author = pg_query('SELECT * FROM student WHERE id=' . $_SESSION['hash']) or die('Ошибка запроса: ' . pg_last_error());
