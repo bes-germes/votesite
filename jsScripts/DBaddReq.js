@@ -14,7 +14,7 @@ function DBaddReq() {
         document.getElementById('fileErr').innerHTML = '';
     }
 
-    if (title_req == "" ||  /\s|⠀/.test(title_req[0])) {
+    if (title_req == "" || /\s|⠀/.test(title_req[0])) {
         document.getElementById('titleErr').classList.remove('d-none');
         return;
     }
@@ -45,12 +45,13 @@ function DBaddReq() {
                 if (!data.includes('kryto')) {
                     document.getElementById('fileErr').classList.remove('d-none');
                     $('#fileErr').append(data);
+                } else {
+                    window.location.href = 'addRequsetSuccesPage.php';
                 }
-                window.location.href = 'addRequsetSuccesPage.php';
+
             }
         });
     }
 
 }
 
-        
